@@ -6,9 +6,8 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class CommitParserSuite extends FunSuite {
-  def test_it = execute()
 
-  test("log parsing test") {
+  test("parsing correct log") {
     val log = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
 Author: Mikołaj Fejzer <mfejzer@gmail.com>
 Date:   Tue Nov 6 22:37:00 2012 +0100
@@ -32,5 +31,69 @@ Date:   Sun Sep 30 19:49:00 2012 +0200
 """
     val result = CommitParser.parse(CommitParser.commitList, log)
     assert(result.successful)
+    assert(result.get.map(x => (x.author == "Mikołaj Fejzer <mfejzer@gmail.com>")).toList.reduce((x, y) => (x && y)))
   }
+
+  test("parsing correct commit") {
+    val commit = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
+Author: Mikołaj Fejzer <mfejzer@gmail.com>
+Date:   Tue Nov 6 22:37:00 2012 +0100
+
+    Removed ArgsState, added AlgorithmStatus
+    
+    kb,kbc and persistance layer changed to use new type
+"""
+
+    val result = CommitParser.parse(CommitParser.commit, commit)
+    assert(result.successful)
+    assert(result.get.author=="Mikołaj Fejzer <mfejzer@gmail.com>")
+    assert(result.get.date=="Tue Nov 6 22:37:00 2012 +0100")
+    assert(result.get.sha1=="b15d78fd348c963d5df649a986b31c9b2dd36b43")
+    assert(result.get.containsFix()==false)
+  }
+
+  test("parsing correct sha1") {
+    val what = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
+      """
+    val result = CommitParser.parse(CommitParser.sha1, what)
+    assert(result.successful)
+  }
+
+  test("parsing correct author") {
+    val what = """Author: Mikołaj Fejzer <mfejzer@gmail.com>
+      """
+    val result = CommitParser.parse(CommitParser.author, what)
+    assert(result.successful)
+  }
+
+  test("parsing correct date") {
+    val  what= """Date:   Tue Nov 6 22:37:00 2012 +0100
+      """
+    val result = CommitParser.parse(CommitParser.date, what)
+    assert(result.successful)
+  }
+
+  test("parsing correct message") {
+    val what = """
+    Removed ArgsState, added AlgorithmStatus
+    
+    kb,kbc and persistance layer changed to use new type
+"""
+    val result = CommitParser.parse(CommitParser.message, what)
+    assert(result.successful)
+  }
+
+  test("parsing correct message with another commit") {
+    val what = """
+    Removed ArgsState, added AlgorithmStatus
+    
+    kb,kbc and persistance layer changed to use new type
+
+commit 1ccdd6fc09cd8cfebeb5e5a796f644294ac46208
+"""
+    val result = CommitParser.parse(CommitParser.message, what)
+    assert(result.successful)
+    assert(!result.get.contains("commit 1ccdd6fc09cd8cfebeb5e5a796f644294ac46208"))
+  }
+  
 }

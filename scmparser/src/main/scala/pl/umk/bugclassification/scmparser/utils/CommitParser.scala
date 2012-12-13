@@ -9,27 +9,21 @@ object CommitParser extends RegexParsers {
     (sha1 ~ author ~ date ~ message) ^^ {
       case s ~ a ~ d ~ m => {
         val c = new Commit(s, a, d, m)
-//        println("XXXXXXXXXXX")
-//        println(c.sha1)
-//        println(c.author)
-//        println(c.date)
-//        println(c.message)
-//        println("XXXXXXXXXXX")
         c
       }
     }
 
   def sha1: Parser[String] =
-    ("commit " ~ sha1Text ~ newline) ^^ { case c ~ s ~ n => s }
+    ("commit(\\s*)".r ~> sha1Text <~ newline) ^^ { case s => s }
 
   def author: Parser[String] =
-    ("Author: " ~ authorName ~ newline) ^^ { case a ~ an ~ n => an }
+    ("Author:(\\s*)".r ~> authorName <~ newline) ^^ { case an => an }
 
   def date: Parser[String] =
-    ("Date:" ~ dateValue ~ newline) ^^ { case d ~ dv ~ n => dv }
+    ("Date:(\\s*)".r ~> dateValue <~ newline) ^^ { case dv => dv }
 
   def message: Parser[String] =
-    (newline ~ messageText ~(newline*)) ^^ { case n ~ mt ~ a=> mt }
+    (newline ~> messageText <~ (newline*)) ^^ { case mt => mt }
 
   def newline = "\\n".r
 
