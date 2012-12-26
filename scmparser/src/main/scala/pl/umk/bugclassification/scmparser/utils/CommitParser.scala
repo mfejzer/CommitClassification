@@ -4,11 +4,12 @@ import scala.util.parsing.combinator.RegexParsers
 object CommitParser extends RegexParsers {
   override def skipWhitespace = false
 
-  def commitList: Parser[List[Commit]] = commit.*
+  def commitList: Parser[List[Commit]] = (commit).* //<~ (not(sha1)|not(newline))
   def commit: Parser[Commit] =
-    (sha1 ~ author ~ date ~ message) ^^ {
-      case s ~ a ~ d ~ m => {
-        val c = new Commit(s, a, d, m)
+    (sha1 ~ author ~ date ~ message ~ filenames) ^^ {
+      case s ~ a ~ d ~ m ~ f => {
+        val c = new Commit(s, a, d, m, f)
+//        println(c)
         c
       }
     }
@@ -23,19 +24,24 @@ object CommitParser extends RegexParsers {
     ("Date:(\\s*)".r ~> dateValue <~ newline) ^^ { case dv => dv }
 
   def message: Parser[String] =
-    (newline ~> messageText <~ (newline*)) ^^ { case mt => mt }
+    (newline ~> messageText <~ newline) ^^ { case mt => mt }
+
+  def filenames: Parser[List[String]] =
+    (newline ~> repsep(filename,newline|"\\Z".r)<~((newline<~newline)|".*\\Z".r)) ^^ { case f => f }
 
   def newline = "\\n".r
 
   def sha1Text: Parser[String] = "[0-9a-f]{40}".r ^^ { case s => s }
   def authorName: Parser[String] = ".*[^\\n]".r ^^ { case s => s }
   def dateValue: Parser[String] = "[^\\n]*".r ^^ { case s => s }
-  def messageText: Parser[String] = "(\\s{4}.*)*".r ^^ { case s => s } //good
-  //  def messageText: Parser[String] = "(?s).*".r ^^ { case s => s }
+  def messageText: Parser[String] = "(\\s{4}.*)*".r ^^ { case s => s }
+  def filename: Parser[String] =  "\\S+".r ^^ { case s => s }
 
-  def apply(input: String): List[Commit] = parseAll(commitList, input) match {
+  def commitsFromLog(input: String): List[Commit] = parseAll(commitList, input) match {
     case Success(result, _) => result
-    case failure: NoSuccess => scala.sys.error(failure.msg)
+    case failure: NoSuccess => {
+      scala.sys.error(failure.msg)
+    }
   }
 }
 

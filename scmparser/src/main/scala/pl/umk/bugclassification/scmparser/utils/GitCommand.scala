@@ -4,19 +4,23 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 object GitCommand {
-  def getGitLogOneline(): java.util.List[String] = {
+  def logOneline(): java.util.List[String] = {
     return asList(ListBuffer(List("git", "log", "--oneline"): _*))
   }
 
-  def getGitLogNoMerges(): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "log"): _*))
+  def logNoMerges(): java.util.List[String] = {
+    return asList(ListBuffer(List("git", "log", "--name-only"): _*))
   }
-  
-  def getGitShowCommit(commit: String): java.util.List[String] = {
+
+  def showCommit(commit: String): java.util.List[String] = {
     return asList(ListBuffer(List("git", "show", commit): _*))
   }
 
-  def getGitShowDiff(commit1: String,commit2:String): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "diff", commit1,commit2): _*))
+  def diff(commit1: String, commit2: String): java.util.List[String] = {
+    return asList(ListBuffer(List("git", "diff", commit1, commit2): _*))
+  }
+
+  def diffOnFileWithParent(commit: Commit, file: String): java.util.List[String] = {
+    return asList(ListBuffer(List("git", "diff", commit.sha1, commit.parent, file): _*))
   }
 }

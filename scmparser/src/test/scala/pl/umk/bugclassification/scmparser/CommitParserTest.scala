@@ -16,11 +16,24 @@ Date:   Tue Nov 6 22:37:00 2012 +0100
     
     kb,kbc and persistance layer changed to use new type
 
+DiagramWrapper.hs
+KnuthBendixCompletion/Algorithm.hs
+KnuthBendixCompletion/Datatypes.hs
+KnuthBendixCompletion/Tests.hs
+Main.hs
+Persistance.hs
+
 commit 1ccdd6fc09cd8cfebeb5e5a796f644294ac46208
 Author: Mikołaj Fejzer <mfejzer@gmail.com>
 Date:   Mon Nov 5 21:36:13 2012 +0100
 
     Changed ReductionRule to use record syntax
+
+DiagramWrapper.hs
+KnuthBendixCompletion/Algorithm.hs
+KnuthBendixCompletion/Datatypes.hs
+KnuthBendixCompletion/Tests.hs
+Parser.hs
 
 commit ff9b7ce7810330984eb346437a58f80b4f6c33ed
 Author: Mikołaj Fejzer <mfejzer@gmail.com>
@@ -28,9 +41,13 @@ Date:   Sun Sep 30 19:49:00 2012 +0200
 
     Fixed kb to remove axioms with lhs and rhs equal
 
+KnuthBendixCompletion/Algorithm.hs
+KnuthBendixCompletion/Tests.hs
+
 """
     val result = CommitParser.parse(CommitParser.commitList, log)
     assert(result.successful)
+    assert(result.get.length == 3)
     assert(result.get.map(x => (x.author == "Mikołaj Fejzer <mfejzer@gmail.com>")).toList.reduce((x, y) => (x && y)))
   }
 
@@ -42,14 +59,21 @@ Date:   Tue Nov 6 22:37:00 2012 +0100
     Removed ArgsState, added AlgorithmStatus
     
     kb,kbc and persistance layer changed to use new type
+
+DiagramWrapper.hs
+KnuthBendixCompletion/Algorithm.hs
+KnuthBendixCompletion/Datatypes.hs
+KnuthBendixCompletion/Tests.hs
+Main.hs
+Persistance.hs
 """
 
     val result = CommitParser.parse(CommitParser.commit, commit)
     assert(result.successful)
-    assert(result.get.author=="Mikołaj Fejzer <mfejzer@gmail.com>")
-    assert(result.get.date=="Tue Nov 6 22:37:00 2012 +0100")
-    assert(result.get.sha1=="b15d78fd348c963d5df649a986b31c9b2dd36b43")
-    assert(result.get.containsFix()==false)
+    assert(result.get.author == "Mikołaj Fejzer <mfejzer@gmail.com>")
+    assert(result.get.date == "Tue Nov 6 22:37:00 2012 +0100")
+    assert(result.get.sha1 == "b15d78fd348c963d5df649a986b31c9b2dd36b43")
+    assert(result.get.containsFix() == false)
   }
 
   test("parsing correct sha1") {
@@ -67,7 +91,7 @@ Date:   Tue Nov 6 22:37:00 2012 +0100
   }
 
   test("parsing correct date") {
-    val  what= """Date:   Tue Nov 6 22:37:00 2012 +0100
+    val what = """Date:   Tue Nov 6 22:37:00 2012 +0100
       """
     val result = CommitParser.parse(CommitParser.date, what)
     assert(result.successful)
@@ -95,5 +119,5 @@ commit 1ccdd6fc09cd8cfebeb5e5a796f644294ac46208
     assert(result.successful)
     assert(!result.get.contains("commit 1ccdd6fc09cd8cfebeb5e5a796f644294ac46208"))
   }
-  
+
 }

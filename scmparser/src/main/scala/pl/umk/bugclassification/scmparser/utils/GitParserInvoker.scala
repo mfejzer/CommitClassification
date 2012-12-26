@@ -10,23 +10,29 @@ class GitParserInvoker(private val repoLocationUrl: String) {
   }
 
   def listLoggedCommitsSHA1s(): List[String] = {
-    createProcessBuilder(GitCommand.getGitLogOneline()).lines.toList.map(x => { (x.split(" ")(0)) })
+    createProcessBuilder(GitCommand.logOneline()).lines.toList.map(x => { (x.split(" ")(0)) })
   }
 
   def showCommit(sha1: String): List[String] = {
-    createProcessBuilder(GitCommand.getGitShowCommit(sha1)).lines.toList
+    createProcessBuilder(GitCommand.showCommit(sha1)).lines.toList
   }
 
   def showDiff(commit1: String, commit2: String): List[String] = {
-    createProcessBuilder(GitCommand.getGitShowDiff(commit1, commit2)).lines.toList
+    createProcessBuilder(GitCommand.diff(commit1, commit2)).lines.toList
   }
 
-  def listLoggedCommits():List[Commit]= {
-    CommitParser.apply(
-      createProcessBuilder(GitCommand.getGitLogNoMerges()).lines.mkString("\n"))
+  def extractRawLog(): String = {
+    createProcessBuilder(GitCommand.logNoMerges()).lines.mkString("\n")
   }
 
-  def tmpListLoggedCommits()= {
-    println(createProcessBuilder(GitCommand.getGitLogNoMerges()).lines.mkString("\n"))
+  def listLoggedCommits(): List[Commit] = {
+    CommitParser.commitsFromLog(extractRawLog())
   }
+
+  def findCausesForFix(fix: Commit): List[(Commit, Commit)] = {
+    fix.filenames.map(x => (x, createProcessBuilder(GitCommand.diffOnFileWithParent(fix, x)).lines.toList))
+
+    List((fix, fix)).toList
+  }
+
 }

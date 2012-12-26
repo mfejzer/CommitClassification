@@ -7,9 +7,12 @@ object Launcher {
   def main(args: Array[String]): Unit = {
     val parser = new GitParserInvoker("/home/mfejzer/projekt/kbc")
 
-    val commitsParsed = parser.listLoggedCommits()
-    commitsParsed.foreach(x => {println(x);println("Contains fix: "+x.containsFix())})
-//    parser.tmpListLoggedCommits()
+        val commitsParsed = parser.listLoggedCommits()
+        commitsParsed.foreach(x => {
+          println(x)
+          println("Contains fix: " + x.containsFix())
+        })
+
   }
 
   def temporaryTests() = {
