@@ -1,7 +1,8 @@
-package pl.umk.bugclassification.scmparser.utils
+package pl.umk.bugclassification.scmparser.utils.parsers
 import scala.util.parsing.combinator.RegexParsers
+import pl.umk.bugclassification.scmparser.utils.Commit
 
-object CommitParser extends RegexParsers {
+object CommitParser extends RegexParsers with CommonParser {
   override def skipWhitespace = false
 
   def commitList: Parser[List[Commit]] = (commit).* //<~ (not(sha1)|not(newline))
@@ -29,13 +30,13 @@ object CommitParser extends RegexParsers {
   def filenames: Parser[List[String]] =
     (newline ~> repsep(filename,newline|"\\Z".r)<~((newline<~newline)|".*\\Z".r)) ^^ { case f => f }
 
-  def newline = "\\n".r
+//  def newline = "\\n".r
 
-  def sha1Text: Parser[String] = "[0-9a-f]{40}".r ^^ { case s => s }
+//  def sha1Text: Parser[String] = "[0-9a-f]{40}".r ^^ { case s => s }
   def authorName: Parser[String] = ".*[^\\n]".r ^^ { case s => s }
   def dateValue: Parser[String] = "[^\\n]*".r ^^ { case s => s }
   def messageText: Parser[String] = "(\\s{4}.*)*".r ^^ { case s => s }
-  def filename: Parser[String] =  "\\S+".r ^^ { case s => s }
+//  def filename: Parser[String] =  "\\S+".r ^^ { case s => s }
 
   def commitsFromLog(input: String): List[Commit] = parseAll(commitList, input) match {
     case Success(result, _) => result

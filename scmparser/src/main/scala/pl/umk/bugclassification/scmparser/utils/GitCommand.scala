@@ -23,4 +23,8 @@ object GitCommand {
   def diffOnFileWithParent(commit: Commit, file: String): java.util.List[String] = {
     return asList(ListBuffer(List("git", "diff", commit.sha1, commit.parent, file): _*))
   }
+
+  def blameOnFileWithParent(commit: Commit, file: String): java.util.List[String] = {
+    return asList(ListBuffer(List("git", "blame" ,"-l","-f", commit.parent, file ): _*))
+  }
 }

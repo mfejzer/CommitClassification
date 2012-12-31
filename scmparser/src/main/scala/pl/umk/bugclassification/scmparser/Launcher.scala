@@ -1,21 +1,42 @@
 package pl.umk.bugclassification.scmparser
 import pl.umk.bugclassification.scmparser.utils.GitParserInvoker
-import pl.umk.bugclassification.scmparser.utils.CommitParser
+import pl.umk.bugclassification.scmparser.utils.parsers.CommitParser
+import pl.umk.bugclassification.scmparser.utils.parsers.BlameParser
+
 
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-    val parser = new GitParserInvoker("/home/mfejzer/projekt/kbc")
-
-        val commitsParsed = parser.listLoggedCommits()
-        commitsParsed.foreach(x => {
-          println(x)
-          println("Contains fix: " + x.containsFix())
-        })
-
+    val parserInvker = new GitParserInvoker("/home/mfejzer/projekt/kbc")
+    //temporaryDiffTests(parser)
+    temporaryBlameTests(parserInvker)
   }
 
-  def temporaryTests() = {
+  def temporaryBlameTests(parserInvker: GitParserInvoker) = {
+    val commitsParsed = parserInvker.listLoggedCommits()
+    val tmpCommit = commitsParsed(0)
+
+    val result = parserInvker.extractBlame(tmpCommit, tmpCommit.filenames(0))
+    println(result)
+    //    println(BlameParser.parse(BlameParser.blame,result.split("\n")(0)))
+    //    BlameParser.parse(BlameParser.blameList,result).map(x => println(x))
+    parserInvker.blameOnCommitParentForFile(tmpCommit, tmpCommit.filenames(0)).
+      map(x => println(x))
+  }
+
+  def temporaryDiffTests(parserInvker: GitParserInvoker) = {
+    val commitsParsed = parserInvker.listLoggedCommits()
+    //    commitsParsed.foreach(x => {
+    //      println(x)
+    //      println("Contains fix: " + x.containsFix())
+    //    })
+    val tmpCommit = commitsParsed(0)
+    val result = parserInvker.extractDiffFromCommitForFile(tmpCommit, tmpCommit.filenames(0))
+    println(result._1)
+    println(result._2.mkString("\n"))
+  }
+
+  def temporaryCommitParserTests() = {
     println(CommitParser.parse(CommitParser.authorName, "Mikołaj"))
     //    println(CommitParser.parse(CommitParser.authorName, "Mikołaj\n"))
     println(CommitParser.parse(CommitParser.author, "Author: Mikołaj\n"))

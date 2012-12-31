@@ -1,5 +1,5 @@
 package pl.umk.bugclassification.scmparser
-import pl.umk.bugclassification.scmparser.utils.CommitParser
+import pl.umk.bugclassification.scmparser.utils.parsers.CommitParser
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
