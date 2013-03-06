@@ -1,4 +1,4 @@
-package pl.umk.bugclassification.scmparser.utils
+package pl.umk.bugclassification.scmparser.git
 
 object BugFixDetectionList {
 	def detectionList():List[String] = {

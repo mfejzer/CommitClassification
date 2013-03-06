@@ -1,7 +1,8 @@
-package pl.umk.bugclassification.scmparser.utils
+package pl.umk.bugclassification.scmparser.git
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
+import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 
 object GitCommand {
   def logOneline(): java.util.List[String] = {

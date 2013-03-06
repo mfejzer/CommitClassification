@@ -1,6 +1,6 @@
-package pl.umk.bugclassification.scmparser.utils.parsers
+package pl.umk.bugclassification.scmparser.git.parsers
 import scala.util.parsing.combinator.RegexParsers
-import pl.umk.bugclassification.scmparser.utils.Blame
+import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 
 object BlameParser extends RegexParsers with CommonParser {
   override def skipWhitespace = false

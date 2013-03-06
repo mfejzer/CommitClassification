@@ -1,4 +1,5 @@
-package pl.umk.bugclassification.scmparser.utils
+package pl.umk.bugclassification.scmparser.git.parsers.results
+import pl.umk.bugclassification.scmparser.git.BugFixDetectionList
 
 class Commit(val sha1: String, val author: String, val date: String, val message: String, val filenames: List[String]) {
   def containsFix(): Boolean = {

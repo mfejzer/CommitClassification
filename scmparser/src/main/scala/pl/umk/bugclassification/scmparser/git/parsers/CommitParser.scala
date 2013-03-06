@@ -1,6 +1,7 @@
-package pl.umk.bugclassification.scmparser.utils.parsers
+package pl.umk.bugclassification.scmparser.git.parsers
 import scala.util.parsing.combinator.RegexParsers
-import pl.umk.bugclassification.scmparser.utils.Commit
+import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
+
 
 object CommitParser extends RegexParsers with CommonParser {
   override def skipWhitespace = false

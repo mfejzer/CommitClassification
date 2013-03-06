@@ -1,4 +1,4 @@
-package pl.umk.bugclassification.scmparser.utils.parsers
+package pl.umk.bugclassification.scmparser.git.parsers
 import scala.util.parsing.combinator.RegexParsers
 
 trait CommonParser extends RegexParsers {

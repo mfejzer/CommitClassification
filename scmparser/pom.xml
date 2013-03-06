@@ -46,6 +46,13 @@
 			<version>${scala.version}</version>
 		</dependency>
 
+		<!-- Weka Toolkit -->
+		<dependency>
+			<groupId>nz.ac.waikato.cms.weka</groupId>
+			<artifactId>weka-stable</artifactId>
+			<version>3.6.8</version>
+		</dependency>
+
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>

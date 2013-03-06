@@ -1,8 +1,10 @@
-package pl.umk.bugclassification.scmparser.utils
+package pl.umk.bugclassification.scmparser.git
 import scala.sys.process.Process
 import scala.sys.process.ProcessIO
-import pl.umk.bugclassification.scmparser.utils.parsers.CommitParser
-import pl.umk.bugclassification.scmparser.utils.parsers.BlameParser
+import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
+import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
+import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
+import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 
 class GitParserInvoker(private val repoLocationUrl: String) {
   private def createProcessBuilder(params: java.util.List[String]): scala.sys.process.ProcessBuilder = {
@@ -31,16 +33,26 @@ class GitParserInvoker(private val repoLocationUrl: String) {
     CommitParser.commitsFromLog(extractLog())
   }
 
-  def findCausesForFix(fix: Commit): List[(Commit, Commit)] = {
-    val filesWithDiffs = fix.filenames.map(file => extractDiffFromCommitForFile(fix, file))
+  def findCausesForFix(fix: Commit): List[(Commit, String)] = {
+    val filesWithDiffs = fix.filenames.map(file => extractDiffFromCommitForFile(fix, file)) //list of (file,removed lines) for commit fix
     val blamesPerFile = fix.filenames.map(file => blameOnCommitParentForFile(fix, file))
-    //Not ready
-    List((fix, fix)).toList
+    val combined = filesWithDiffs.zip(blamesPerFile)
+    val result = combined.
+      map(pair => process(pair)).
+      flatten.removeDuplicates.
+      map(bugIntroductingSha1 => (fix, bugIntroductingSha1))
+
+    result
   }
 
-  def extractDiffFromCommitForFile(commit: Commit, file: String): (String, List[String]) = {
-    (file,
-      filterRemovedLines(createProcessBuilder(GitCommand.diffOnFileWithParent(commit, file)).lines.toList))
+  def process(pair: (List[String], List[Blame])): List[String] = {
+    val diffs = pair._1
+    val blames = pair._2
+    diffs.map(line => { blames.filter(blame => blame.line == line).map(blame => blame.sha1) }).flatten.removeDuplicates
+  }
+
+  def extractDiffFromCommitForFile(commit: Commit, file: String): List[String] = {
+    filterRemovedLines(createProcessBuilder(GitCommand.diffOnFileWithParent(commit, file)).lines.toList)
   }
 
   def filterRemovedLines(fileContent: List[String]): List[String] = {
@@ -52,8 +64,8 @@ class GitParserInvoker(private val repoLocationUrl: String) {
   }
 
   def extractBlame(commit: Commit, file: String): String = {
-//    println(GitCommand.blameOnFileWithParent(commit, file))
-    createProcessBuilder(GitCommand.blameOnFileWithParent(commit, file)).lines.mkString("\n")+"\n"
+    //    println(GitCommand.blameOnFileWithParent(commit, file))
+    createProcessBuilder(GitCommand.blameOnFileWithParent(commit, file)).lines.mkString("\n") + "\n"
   }
 
 }

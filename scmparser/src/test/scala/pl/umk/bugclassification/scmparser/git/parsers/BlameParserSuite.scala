@@ -1,6 +1,5 @@
-package pl.umk.bugclassification.scmparser
+package pl.umk.bugclassification.scmparser.git.parsers
 
-import pl.umk.bugclassification.scmparser.utils.parsers.BlameParser
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

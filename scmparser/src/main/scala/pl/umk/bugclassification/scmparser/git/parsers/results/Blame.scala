@@ -1,4 +1,4 @@
-package pl.umk.bugclassification.scmparser.utils
+package pl.umk.bugclassification.scmparser.git.parsers.results
 
 class Blame(val sha1: String, val filename: String, val metadata: String, val line: String) {
 

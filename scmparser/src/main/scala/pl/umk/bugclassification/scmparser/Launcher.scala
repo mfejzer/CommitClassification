@@ -1,7 +1,7 @@
 package pl.umk.bugclassification.scmparser
-import pl.umk.bugclassification.scmparser.utils.GitParserInvoker
-import pl.umk.bugclassification.scmparser.utils.parsers.CommitParser
-import pl.umk.bugclassification.scmparser.utils.parsers.BlameParser
+import pl.umk.bugclassification.scmparser.git.GitParserInvoker
+import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
+
 
 
 object Launcher {
@@ -32,8 +32,7 @@ object Launcher {
     //    })
     val tmpCommit = commitsParsed(0)
     val result = parserInvker.extractDiffFromCommitForFile(tmpCommit, tmpCommit.filenames(0))
-    println(result._1)
-    println(result._2.mkString("\n"))
+    println(result.mkString("\n"))
   }
 
   def temporaryCommitParserTests() = {
