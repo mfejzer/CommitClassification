@@ -1,18 +1,19 @@
 package pl.umk.bugclassification.scmparser
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
+import pl.umk.bugclassification.scmparser.git.ParserInvoker
 
 
 
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-    val parserInvker = new GitParserInvoker("/home/mfejzer/projekt/kbc")
+    val parserInvker:ParserInvoker = new GitParserInvoker("/home/mfejzer/projekt/kbc")
     //temporaryDiffTests(parser)
     temporaryBlameTests(parserInvker)
   }
 
-  def temporaryBlameTests(parserInvker: GitParserInvoker) = {
+  def temporaryBlameTests(parserInvker: ParserInvoker) = {
     val commitsParsed = parserInvker.listLoggedCommits()
     val tmpCommit = commitsParsed(0)
 
@@ -24,7 +25,7 @@ object Launcher {
       map(x => println(x))
   }
 
-  def temporaryDiffTests(parserInvker: GitParserInvoker) = {
+  def temporaryDiffTests(parserInvker: ParserInvoker) = {
     val commitsParsed = parserInvker.listLoggedCommits()
     //    commitsParsed.foreach(x => {
     //      println(x)

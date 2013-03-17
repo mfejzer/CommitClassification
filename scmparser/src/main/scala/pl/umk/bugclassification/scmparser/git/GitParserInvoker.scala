@@ -6,7 +6,7 @@ import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 
-class GitParserInvoker(private val repoLocationUrl: String) {
+class GitParserInvoker(private val repoLocationUrl: String) extends ParserInvoker {
   private def createProcessBuilder(params: java.util.List[String]): scala.sys.process.ProcessBuilder = {
     val pb = Process((new java.lang.ProcessBuilder(params))
       directory new java.io.File(repoLocationUrl))
@@ -25,7 +25,7 @@ class GitParserInvoker(private val repoLocationUrl: String) {
     createProcessBuilder(GitCommand.diff(commit1, commit2)).lines.toList
   }
 
-  def extractLog(): String = {
+  private def extractLog(): String = {
     createProcessBuilder(GitCommand.logNoMerges()).lines.mkString("\n")
   }
 
@@ -45,7 +45,7 @@ class GitParserInvoker(private val repoLocationUrl: String) {
     result
   }
 
-  def process(pair: (List[String], List[Blame])): List[String] = {
+  private def process(pair: (List[String], List[Blame])): List[String] = {
     val diffs = pair._1
     val blames = pair._2
     diffs.map(line => { blames.filter(blame => blame.line == line).map(blame => blame.sha1) }).flatten.removeDuplicates
@@ -55,7 +55,7 @@ class GitParserInvoker(private val repoLocationUrl: String) {
     filterRemovedLines(createProcessBuilder(GitCommand.diffOnFileWithParent(commit, file)).lines.toList)
   }
 
-  def filterRemovedLines(fileContent: List[String]): List[String] = {
+  private def filterRemovedLines(fileContent: List[String]): List[String] = {
     fileContent.filter(x => { x.startsWith("-") && (!x.contains("---")) }).map(x => x.drop(1))
   }
 

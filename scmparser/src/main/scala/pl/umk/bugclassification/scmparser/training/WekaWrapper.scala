@@ -5,33 +5,38 @@ import weka.core.FastVector
 import weka.core.Instance
 import weka.core.Instances
 
-object WekaWrapper {
+class WekaWrapper {
   def generateInstances(bags: List[BagOfWords]): Instances = {
-    val atts = new FastVector()
-    atts.addElement(new Attribute("att1"));
-    // - nominal
-    val attVals = new FastVector();
-    //     for (i = 0; i < 5; i++)
-    //       attVals.addElement("val" + (i+1));
-    atts.addElement(new Attribute("att2", attVals));
-    // - string
-    atts.addElement(new Attribute("att3", null: (FastVector)));
-    // - date
-    atts.addElement(new Attribute("att4", "yyyy-MM-dd"));
-    // - relational
-    val attsRel = new FastVector();
-    // -- numeric
-    attsRel.addElement(new Attribute("att5.1"));
-    // -- nominal
-    val attValsRel = new FastVector();
-    //     for (i = 0; i < 5; i++)
-    //       attValsRel.addElement("val5." + (i+1));
-    attsRel.addElement(new Attribute("att5.2", attValsRel));
-    val dataRel = new Instances("att5", attsRel, 0);
-    atts.addElement(new Attribute("att5", dataRel, 0));
+    val keys = bags.map(x => x.map.keySet.toList).flatten.removeDuplicates
+    //val keys = bags.map(x => x.map).reduce((a,b)=>a++b).keySet.toList
 
-    // 2. create Instances object
+    val atts = new FastVector()
+    keys.map(x => atts.addElement(new Attribute(x)))
+
+    val classificationAttributeValues = new FastVector();
+    classificationAttributeValues.addElement("buggy")
+    classificationAttributeValues.addElement("clean")
+    val classificationAttribute = new Attribute("Classification", classificationAttributeValues)
+    atts.addElement(classificationAttribute);
+
     val data = new Instances("MyRelation", atts, 0);
-    return data
+    bags.map(bag => createInstance(bag, keys, classificationAttributeValues)).foreach(instance => data.add(instance))
+    data
   }
+
+  def createInstance(bag: BagOfWords, keys: List[String], classificationAttributeValues: FastVector): Instance = {
+    val values = new Array[Double](keys.size + 1)
+    for (i <- 0 to keys.size-1) {
+      values(i) = bag.map.getOrElse(keys(i), 0).toDouble
+    }
+    if (bag.isBug) {
+      values(keys.size) = classificationAttributeValues.indexOf("buggy")
+    } else {
+      values(keys.size) = classificationAttributeValues.indexOf("clean")
+    }
+    val instance = new Instance(1.0, values)
+
+    instance
+  }
+
 }
