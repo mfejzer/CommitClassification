@@ -2,13 +2,16 @@ package pl.umk.bugclassification.scmparser
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
-
-
+import pl.umk.bugclassification.scmparser.training.BagOfWordsWordParser
 
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-    val parserInvker:ParserInvoker = new GitParserInvoker("/home/mfejzer/projekt/kbc")
+    println(BagOfWordsWordParser.process("banana banana ychy ychy ychy"))
+  }
+
+  def tmp = {
+    val parserInvker: ParserInvoker = new GitParserInvoker("/home/mfejzer/projekt/kbc")
     //temporaryDiffTests(parser)
     temporaryBlameTests(parserInvker)
   }

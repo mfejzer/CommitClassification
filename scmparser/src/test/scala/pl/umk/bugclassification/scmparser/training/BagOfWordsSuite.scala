@@ -31,7 +31,6 @@ class BagOfWordsSuite extends FunSuite {
   test("check bag of words on empty string") {
     val bag = new BagOfWords(List(""), false)
     val map = bag.generateMap()
-    println(map)
     assert(map.isEmpty)
   }
 
@@ -41,5 +40,29 @@ class BagOfWordsSuite extends FunSuite {
     assert(!map.isEmpty)
     assert(map.get("banana").isDefined)
     assert(map.get("banana").get === 1)
+  }
+
+  test("check bag of words on '(4+5*banana)'") {
+    val bag = new BagOfWords(List("(4+5*(banana)) 5==8"), false)
+    val map = bag.generateMap()
+    assert(!map.isEmpty)
+    println(map)
+    assert(map.get("4").isDefined)
+    assert(map.get("5").isDefined)
+    assert(map.get("banana").isDefined)
+    assert(map.get("8").isDefined)
+    assert(map.get("+").isDefined)
+    assert(map.get("=").isDefined)
+    assert(map.get("(").isDefined)
+    assert(map.get(")").isDefined)
+    assert(map.get("4").get === 1)
+    assert(map.get("5").get === 2)
+    assert(map.get("banana").get === 1)
+    assert(map.get("8").get === 1)
+    assert(map.get("+").get === 1)
+    assert(map.get("*").get === 1)
+    assert(map.get("=").get === 2)
+    assert(map.get("(").get === 2)
+    assert(map.get(")").get === 2)
   }
 }
