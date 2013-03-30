@@ -46,7 +46,6 @@ class BagOfWordsSuite extends FunSuite {
     val bag = new BagOfWords(List("(4+5*(banana)) 5==8"), false)
     val map = bag.generateMap()
     assert(!map.isEmpty)
-    println(map)
     assert(map.get("4").isDefined)
     assert(map.get("5").isDefined)
     assert(map.get("banana").isDefined)

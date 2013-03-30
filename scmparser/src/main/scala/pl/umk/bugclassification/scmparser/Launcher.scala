@@ -7,7 +7,7 @@ import pl.umk.bugclassification.scmparser.training.BagOfWordsWordParser
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-    println(BagOfWordsWordParser.process("banana banana ychy ychy ychy"))
+    ClassificationServiceLauncher.start
   }
 
   def tmp = {
