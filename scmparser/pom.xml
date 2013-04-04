@@ -52,6 +52,13 @@
 			<version>3.6.8</version>
 		</dependency>
 
+		<!-- Svm library for Weka Toolkit -->
+		<dependency>
+			<groupId>tw.edu.ntu.csie</groupId>
+			<artifactId>libsvm</artifactId>
+			<version>3.1</version>
+		</dependency>
+
 		<!-- Web Service -->
 		<dependency>
 			<groupId>pl.umk.bugclassification</groupId>
@@ -142,7 +149,16 @@
 						</goals>
 						<configuration>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
-							<minimizeJar>true</minimizeJar>
+							<!-- <minimizeJar>true</minimizeJar> -->
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<!-- <mainClass>org.sonatype.haven.HavenCli</mainClass> -->
+									<manifestEntries>
+										<Class-Path>.</Class-Path>
+									</manifestEntries>
+								</transformer>
+							</transformers>
 						</configuration>
 					</execution>
 				</executions>

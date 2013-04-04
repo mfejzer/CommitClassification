@@ -6,12 +6,14 @@ import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 
-class GitParserInvoker(private val repoLocationUrl: String) extends ParserInvoker {
+class GitParserInvoker(private val projectName:String,private val repoLocationUrl: String) extends ParserInvoker {
   private def createProcessBuilder(params: java.util.List[String]): scala.sys.process.ProcessBuilder = {
     val pb = Process((new java.lang.ProcessBuilder(params))
       directory new java.io.File(repoLocationUrl))
     return pb
   }
+  
+  def getProjectName = projectName
 
   def listLoggedCommitsSHA1s(): List[String] = {
     createProcessBuilder(GitCommand.logOneline()).lines.toList.map(x => { (x.split(" ")(0)) })

@@ -35,9 +35,9 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Gerrit-Module>com.google.gerrit.Module</Gerrit-Module>
-							<Gerrit-SshModule>com.google.gerrit.SshModule</Gerrit-SshModule>
-							<Gerrit-HttpModule>com.google.gerrit.HttpModule</Gerrit-HttpModule>
+<!-- 							<Gerrit-Module>com.google.gerrit.Module</Gerrit-Module> -->
+<!-- 							<Gerrit-SshModule>com.google.gerrit.SshModule</Gerrit-SshModule> -->
+<!-- 							<Gerrit-HttpModule>com.google.gerrit.HttpModule</Gerrit-HttpModule> -->
 
 							<Implementation-Vendor>machina</Implementation-Vendor>
 							<Implementation-URL>http://machina:8080</Implementation-URL>
@@ -50,6 +50,24 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<!-- <minimizeJar>true</minimizeJar> -->
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>

@@ -2,7 +2,9 @@ package pl.umk.bugclassification.scmparser.training
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.combinator.syntactical.StandardTokenParsers
 
-class BagOfWords(val showOfCommit: List[String], val isBug: Boolean) {
+class ClassifiedBagOfWords(showOfCommit: List[String], val isBug: Boolean) extends BagOfWords(showOfCommit)
+
+class BagOfWords(val showOfCommit: List[String]) {
   def generateMap(): Map[String, Int] = {
     val map = showOfCommit.
       map(line => line split " ").

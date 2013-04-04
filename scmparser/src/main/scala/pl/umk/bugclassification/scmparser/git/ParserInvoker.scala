@@ -4,6 +4,7 @@ import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
 
 trait ParserInvoker {
+  def getProjectName:String
   def listLoggedCommitsSHA1s(): List[String] 
   def showCommit(sha1: String): List[String]
   def showDiff(commit1: String, commit2: String): List[String]

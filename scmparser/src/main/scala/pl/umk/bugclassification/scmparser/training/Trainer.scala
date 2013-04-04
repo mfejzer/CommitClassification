@@ -2,7 +2,7 @@ package pl.umk.bugclassification.scmparser.training
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
 
-class Trainer(private val parserInvoker: ParserInvoker) {
+class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: ModelDAO) {
   private val wekaWrapper = new WekaWrapper()
 
   def prepareSha1WithClassificationForTrainingSet(): (List[(String, Boolean)]) = {
@@ -19,17 +19,22 @@ class Trainer(private val parserInvoker: ParserInvoker) {
     result
   }
 
-  def prepareTrainingSet(): List[BagOfWords] = {
+  def prepareTrainingSet(): List[ClassifiedBagOfWords] = {
     val sha1s = prepareSha1WithClassificationForTrainingSet()
     val result = sha1s.
-      map(x => new BagOfWords(parserInvoker.showCommit(x._1), x._2))
+      map(x => new ClassifiedBagOfWords(parserInvoker.showCommit(x._1), x._2))
 
     result
   }
 
   def invokeWeka(printAttributes: Boolean, printEvaluation: Boolean) = {
-    val instances = wekaWrapper.generateInstances(prepareTrainingSet())
+    val instancesAndKeys = wekaWrapper.generateInstancesAndKeys(prepareTrainingSet())
+    val instances = instancesAndKeys._1
+    val keys = instancesAndKeys._2
+
     wekaWrapper.trainSvm(instances)
+    modelDao.saveModel(parserInvoker.getProjectName, wekaWrapper.saveModel, keys)
+
     if (printAttributes) {
       for (i <- 0 to instances.numAttributes() - 1) {
         println(instances.attribute(i))

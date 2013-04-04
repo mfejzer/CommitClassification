@@ -7,7 +7,7 @@ import org.scalatest.junit.JUnitRunner
 class BagOfWordsSuite extends FunSuite {
 
   test("check bag of words on 'banana banana ychy ychy ychy'") {
-    val bag = new BagOfWords(List("banana banana ychy ychy ychy"), false)
+    val bag = new BagOfWords(List("banana banana ychy ychy ychy"))
     val map = bag.generateMap()
     assert(!map.isEmpty)
     assert(map.keySet.size === 2)
@@ -18,7 +18,7 @@ class BagOfWordsSuite extends FunSuite {
   }
 
   test("check bag of words on two lines") {
-    val bag = new BagOfWords(List("banana banana", "ychy ychy ychy"), false)
+    val bag = new BagOfWords(List("banana banana", "ychy ychy ychy"))
     val map = bag.generateMap()
     assert(!map.isEmpty)
     assert(map.keySet.size === 2)
@@ -29,13 +29,13 @@ class BagOfWordsSuite extends FunSuite {
   }
 
   test("check bag of words on empty string") {
-    val bag = new BagOfWords(List(""), false)
+    val bag = new BagOfWords(List(""))
     val map = bag.generateMap()
     assert(map.isEmpty)
   }
 
   test("check bag of words on 'banana'") {
-    val bag = new BagOfWords(List("banana"), false)
+    val bag = new BagOfWords(List("banana"))
     val map = bag.generateMap()
     assert(!map.isEmpty)
     assert(map.get("banana").isDefined)
@@ -43,7 +43,7 @@ class BagOfWordsSuite extends FunSuite {
   }
 
   test("check bag of words on '(4+5*banana)'") {
-    val bag = new BagOfWords(List("(4+5*(banana)) 5==8"), false)
+    val bag = new BagOfWords(List("(4+5*(banana)) 5==8"))
     val map = bag.generateMap()
     assert(!map.isEmpty)
     assert(map.get("4").isDefined)
