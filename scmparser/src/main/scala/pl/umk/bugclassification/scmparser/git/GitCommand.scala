@@ -1,31 +1,49 @@
 package pl.umk.bugclassification.scmparser.git
 
-import scala.collection.JavaConversions._
-import scala.collection.mutable.ListBuffer
+import scala.collection.JavaConversions.seqAsJavaList
+
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
+import pl.umk.bugclassification.scmparser.Command
 
-object GitCommand {
-  def logOneline(): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "log", "--oneline"): _*))
-  }
+trait GitCommand extends Command {
 
-  def logNoMerges(): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "log", "--name-only"): _*))
-  }
-
-  def showCommit(commit: String): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "show", commit): _*))
-  }
-
-  def diff(commit1: String, commit2: String): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "diff", commit1, commit2): _*))
-  }
-
-  def diffOnFileWithParent(commit: Commit, file: String): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "diff", commit.sha1, commit.parent, file): _*))
-  }
-
-  def blameOnFileWithParent(commit: Commit, file: String): java.util.List[String] = {
-    return asList(ListBuffer(List("git", "blame" ,"-l","-f", commit.parent, file ): _*))
-  }
 }
+
+case object GitFetchCommand extends GitCommand {
+  def command = List("git", "fetch")
+}
+
+case object GitResetHardOnOriginMasterCommand extends GitCommand {
+  def command = List("git", "reset", "--hard", "origin/master")
+}
+
+case class GitResetHardOnBranchCommand(private val branch: String) extends GitCommand {
+  def command = List("git", "reset", "--hard", branch)
+}
+
+case object GitLogOnelineCommand extends GitCommand {
+  def command = List("git", "log", "--oneline")
+}
+
+case object GitLogNoMerges extends GitCommand {
+  def command = List("git", "log", "--name-only")
+}
+
+case class GitShowCommit(sha1: String) extends GitCommand {
+  def command = List("git", "show", sha1)
+}
+
+case class GitDiff(firstSha1: String, secondSha1: String) extends GitCommand {
+  def command = List("git", "diff", firstSha1, secondSha1)
+}
+
+case class GitDiffOnFileWithParent(commit: Commit, file: String) extends GitCommand {
+  def command = List("git", "diff", commit.sha1, commit.parent, file)
+}
+
+case class GitBlameOnFileWithParent(commit: Commit, file: String) extends GitCommand {
+  def command = List("git", "blame", "-l", "-f", commit.parent, file)
+}
+
+
+

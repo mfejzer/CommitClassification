@@ -1,34 +1,31 @@
 package pl.umk.bugclassification.scmparser.git
-import scala.sys.process.Process
-import scala.sys.process.ProcessIO
-import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
-import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
-import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
+import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
+import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
+import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
 
-class GitParserInvoker(private val projectName:String,private val repoLocationUrl: String) extends ParserInvoker {
-  private def createProcessBuilder(params: java.util.List[String]): scala.sys.process.ProcessBuilder = {
-    val pb = Process((new java.lang.ProcessBuilder(params))
-      directory new java.io.File(repoLocationUrl))
-    return pb
-  }
-  
+class GitParserInvoker(
+  private val projectName: String,
+  private val repoLocationUrl: String) extends ParserInvoker {
+
+  def dirUrl = repoLocationUrl
+
   def getProjectName = projectName
 
   def listLoggedCommitsSHA1s(): List[String] = {
-    createProcessBuilder(GitCommand.logOneline()).lines.toList.map(x => { (x.split(" ")(0)) })
+    createProcessBuilder(GitLogOnelineCommand).lines.toList.map(x => { (x.split(" ")(0)) })
   }
 
   def showCommit(sha1: String): List[String] = {
-    createProcessBuilder(GitCommand.showCommit(sha1)).lines.toList
+    createProcessBuilder(GitShowCommit(sha1)).lines.toList
   }
 
   def showDiff(commit1: String, commit2: String): List[String] = {
-    createProcessBuilder(GitCommand.diff(commit1, commit2)).lines.toList
+    createProcessBuilder(GitDiff(commit1, commit2)).lines.toList
   }
 
   private def extractLog(): String = {
-    createProcessBuilder(GitCommand.logNoMerges()).lines.mkString("\n")
+    createProcessBuilder(GitLogNoMerges).lines.mkString("\n")
   }
 
   def listLoggedCommits(): List[Commit] = {
@@ -54,7 +51,7 @@ class GitParserInvoker(private val projectName:String,private val repoLocationUr
   }
 
   def extractDiffFromCommitForFile(commit: Commit, file: String): List[String] = {
-    filterRemovedLines(createProcessBuilder(GitCommand.diffOnFileWithParent(commit, file)).lines.toList)
+    filterRemovedLines(createProcessBuilder(GitDiffOnFileWithParent(commit, file)).lines.toList)
   }
 
   private def filterRemovedLines(fileContent: List[String]): List[String] = {
@@ -66,8 +63,7 @@ class GitParserInvoker(private val projectName:String,private val repoLocationUr
   }
 
   def extractBlame(commit: Commit, file: String): String = {
-    //    println(GitCommand.blameOnFileWithParent(commit, file))
-    createProcessBuilder(GitCommand.blameOnFileWithParent(commit, file)).lines.mkString("\n") + "\n"
+    createProcessBuilder(GitBlameOnFileWithParent(commit, file)).lines.mkString("\n") + "\n"
   }
 
 }

@@ -3,15 +3,13 @@ import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
 import pl.umk.bugclassification.scmparser.training.BagOfWordsWordParser
-import pl.umk.bugclassification.scmparser.ClassificationServiceLauncher
 import pl.umk.bugclassification.scmparser.training.Classificator
 import pl.umk.bugclassification.scmparser.training.ModelDAOImpl
 
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-    val csl = new ClassificationServiceLauncher(new Classificator(new ModelDAOImpl))
-    csl.start
+
   }
 
   def tmp = {
