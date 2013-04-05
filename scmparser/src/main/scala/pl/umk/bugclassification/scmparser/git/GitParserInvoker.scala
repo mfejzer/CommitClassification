@@ -17,15 +17,15 @@ class GitParserInvoker(
   }
 
   def showCommit(sha1: String): List[String] = {
-    createProcessBuilder(GitShowCommit(sha1)).lines.toList
+    createProcessBuilder(GitShowCommitCommand(sha1)).lines.toList
   }
 
   def showDiff(commit1: String, commit2: String): List[String] = {
-    createProcessBuilder(GitDiff(commit1, commit2)).lines.toList
+    createProcessBuilder(GitDiffCommand(commit1, commit2)).lines.toList
   }
 
   private def extractLog(): String = {
-    createProcessBuilder(GitLogNoMerges).lines.mkString("\n")
+    createProcessBuilder(GitLogNoMergesCommand).lines.mkString("\n")
   }
 
   def listLoggedCommits(): List[Commit] = {
@@ -51,7 +51,7 @@ class GitParserInvoker(
   }
 
   def extractDiffFromCommitForFile(commit: Commit, file: String): List[String] = {
-    filterRemovedLines(createProcessBuilder(GitDiffOnFileWithParent(commit, file)).lines.toList)
+    filterRemovedLines(createProcessBuilder(GitDiffOnFileWithParentCommand(commit, file)).lines.toList)
   }
 
   private def filterRemovedLines(fileContent: List[String]): List[String] = {
@@ -63,7 +63,7 @@ class GitParserInvoker(
   }
 
   def extractBlame(commit: Commit, file: String): String = {
-    createProcessBuilder(GitBlameOnFileWithParent(commit, file)).lines.mkString("\n") + "\n"
+    createProcessBuilder(GitBlameOnFileWithParentCommand(commit, file)).lines.mkString("\n") + "\n"
   }
 
 }

@@ -8,22 +8,22 @@ trait GerritSshCommand extends Command {
 
 }
 
-case class GerritSshStreamEvents(private val port: Int, private val hostname: String)
+case class GerritSshStreamEventsCommand(private val port: Int, private val hostname: String)
   extends GerritSshCommand {
   def command = List("ssh", "-p", port.toString(), hostname, "gerrit", "stream-events")
 }
 
-case class GerritSshCommentOnPatshSet(private val port: Int, private val hostname: String,
+case class GerritSshCommentOnPatshSetCommand(private val port: Int, private val hostname: String,
   private val sha1: String, private val message: String) extends GerritSshCommand {
   def command = List("ssh", "-p", port.toString(), hostname, "gerrit", "review", "-m", message, sha1)
 }
 
-case class GerritSshLsProjects(private val port: Int, private val hostname: String)
+case class GerritSshLsProjectsCommand(private val port: Int, private val hostname: String)
   extends GerritSshCommand {
   def command = List("ssh", "-p", port.toString(), hostname, "gerrit", "ls-projects")
 }
 
-case class GitCloneProjectFromGerrit(private val port: Int, private val hostname: String,
+case class GitCloneProjectFromGerritCommand(private val port: Int, private val hostname: String,
   private val projectName: String) extends GitCommand with GerritSshCommand {
   def command = List("git", "clone", "--bare",
     "ssh:" + hostname + ":" + port.toString() + "/" + projectName + ".git",

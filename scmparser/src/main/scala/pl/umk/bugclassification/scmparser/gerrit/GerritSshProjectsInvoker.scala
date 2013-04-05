@@ -6,12 +6,12 @@ class GerritSshProjectsInvoker(private val port: Int, private val hostname: Stri
   def dirUrl = directory
 
   private def getAllProjects: List[String] = {
-    createProcessBuilder(GerritSshLsProjects(port, hostname)).lines.toList
+    createProcessBuilder(GerritSshLsProjectsCommand(port, hostname)).lines.toList
   }
 
   private def cloneAndCreateParserInvoker(projects: List[String]): List[GitParserInvoker] = {
     projects.foreach(projectName =>
-      createProcessBuilder(GitCloneProjectFromGerrit(port, hostname, projectName)).
+      createProcessBuilder(GitCloneProjectFromGerritCommand(port, hostname, projectName)).
         run())
 
     createParserInvokers(projects)
