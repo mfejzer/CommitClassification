@@ -5,11 +5,12 @@ import pl.umk.bugclassification.scmparser.git.ParserInvoker
 import pl.umk.bugclassification.scmparser.training.BagOfWordsWordParser
 import pl.umk.bugclassification.scmparser.training.Classificator
 import pl.umk.bugclassification.scmparser.training.ModelDAOImpl
+import pl.umk.bugclassification.scmparser.gerrit.GerritSshEventsStreamListeningInvoker
 
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-
+    val gseski = new GerritSshEventsStreamListeningInvoker(29418,"localhost")
   }
 
   def tmp = {
