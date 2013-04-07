@@ -29,3 +29,11 @@ case class GitCloneProjectFromGerritCommand(private val port: Int, private val h
     "ssh:" + hostname + ":" + port.toString() + "/" + projectName + ".git",
     projectName + ".git") //git clone --bare "ssh://review.example.com:29418/$p.git" "$p.git"
 }
+
+case class GitFetchAndCheckoutPatchSet(private val port: Int, private val hostname: String,
+  private val user: String, private val projectName: String, private val ref: String)
+  extends GitCommand with GerritSshCommand {
+  def command = List("git", "fetch",
+    "ssh://" + user + "@" + hostname + ":" + port + "/" + projectName, ref,
+    "&& git checkout FETCH_HEAD")
+}

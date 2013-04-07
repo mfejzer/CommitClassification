@@ -13,7 +13,7 @@ class Classificator(private val modelDao: ModelDAO) {
       val wrapper = new WekaWrapper()
       val instance = wrapper.createClassificationInstance(bag, keys)
       classifier.classifyInstance(instance)
-      true
+      true//Change to something
     } else {
       false
     }

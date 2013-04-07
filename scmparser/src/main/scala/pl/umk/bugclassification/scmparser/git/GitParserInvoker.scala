@@ -3,14 +3,30 @@ import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
 import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
+import pl.umk.bugclassification.scmparser.gerrit.GitFetchAndCheckoutPatchSet
 
-class GitParserInvoker(
-  private val projectName: String,
+class GitParserInvoker(private val port: Int, private val host: String,
+  private val user: String, private val projectName: String,
   private val repoLocationUrl: String) extends ParserInvoker {
+
+  fetch
+  resetRepo
 
   def dirUrl = repoLocationUrl
 
   def getProjectName = projectName
+
+  def resetRepo: Unit = {
+    createProcessBuilder(GitResetHardOnOriginMasterCommand).run()
+  }
+
+  def fetch: Unit = {
+    createProcessBuilder(GitFetchCommand).run()
+  }
+
+  def fetchAndCheckoutFromGerrit(ref: String) = {
+    createProcessBuilder(GitFetchAndCheckoutPatchSet(port, host, user, projectName, ref)).run()
+  }
 
   def listLoggedCommitsSHA1s(): List[String] = {
     createProcessBuilder(GitLogOnelineCommand).lines.toList.map(x => { (x.split(" ")(0)) })
