@@ -2,17 +2,19 @@ package pl.umk.bugclassification.scmparser
 import pl.umk.bugclassification.scmparser.training.ModelDAO
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.training.Trainer
+import pl.umk.bugclassification.scmparser.gerrit.ProjectInvoker
 
-class Learner(private val port: Int, private val hostname: String,
-  private val parserInvokers: Map[String, GitParserInvoker],
-  private val modelDao: ModelDAO) {
-  val trainers = parserInvokers.mapValues(parserInvoker => new Trainer(parserInvoker, modelDao))
+class Learner(private val projectInvokers: Map[String, ProjectInvoker]) {
 
   def trainAll = {
-    trainers.values.par.foreach(trainer => trainer.invokeWeka(false, false))
+    projectInvokers.values.par.foreach(projectInvoker => projectInvoker ! Learn("master"))
   }
 
   def trainOnProject(project: String) = {
-    trainers.get(project).foreach(trainer => trainer.invokeWeka(false, false))
+    projectInvokers.get(project).foreach(projectInvoker => projectInvoker ! Learn("master"))
+  }
+
+  def trainOnProject(project: String, branch: String) = {
+    projectInvokers.get(project).foreach(projectInvoker => projectInvoker ! Learn(branch))
   }
 }

@@ -26,7 +26,7 @@ object App {
     val port = conf.port.apply()
     val hostname = conf.hostname.apply()
     val user = conf.user.apply()
-    val parserInvoker = new GitParserInvoker(port, hostname, user, conf.projectName.apply, conf.repoPath.apply)
+    val parserInvoker = new GitParserInvoker(conf.projectName.apply, conf.repoPath.apply)
     val trainer = new Trainer(parserInvoker, new ModelDAOImpl)
     val printEval = conf.printEvalResults.get.getOrElse(false)
     val printAttributes = conf.printAttributes.get.getOrElse(false)

@@ -10,7 +10,7 @@ import pl.umk.bugclassification.scmparser.gerrit.GerritSshEventsStreamListeningI
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-    val gseski = new GerritSshEventsStreamListeningInvoker(29418, "localhost",
+    val listeningInvoker = new GerritSshEventsStreamListeningInvoker(29418, "localhost",
       project => ref => sha1 => {
         println(project)
         println(ref)
@@ -20,7 +20,7 @@ object Launcher {
 
   def tmp = {
     val parserInvker: ParserInvoker =
-      new GitParserInvoker(29418, "machina", "mfejzer", "kbc", "/home/mfejzer/projekt/kbc")
+      new GitParserInvoker("kbc", "/home/mfejzer/projekt/kbc")
     //temporaryDiffTests(parser)
     temporaryBlameTests(parserInvker)
   }

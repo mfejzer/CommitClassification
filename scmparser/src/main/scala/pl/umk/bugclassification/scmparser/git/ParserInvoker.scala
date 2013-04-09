@@ -5,9 +5,6 @@ import pl.umk.bugclassification.scmparser.InvokerOnDirectory
 
 trait ParserInvoker extends InvokerOnDirectory {
   def getProjectName: String
-  def resetRepo:Unit
-  def fetch:Unit
-  def fetchAndCheckoutFromGerrit(ref:String)
   def listLoggedCommitsSHA1s(): List[String]
   def showCommit(sha1: String): List[String]
   def showDiff(commit1: String, commit2: String): List[String]
