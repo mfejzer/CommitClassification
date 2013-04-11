@@ -23,14 +23,17 @@ trait ProjectInvoker extends Actor with InvokerOnDirectory{
     while (true) {
       receive {
         case Learn("master") => {
+          println("Learn on master")
           resetRepo
           learn
         }
         case Learn(branch) => {
+          println("Learn on ",branch)
           resetRepo(branch)
           learn
         }
         case Classify(ref, sha1) => {
+          println("Classify "+ref+" "+sha1)
           fetchAndCheckoutFromGerrit(ref)
           val isCommitClassifiedBuggy = classify(ref, sha1)
           send(sha1, isCommitClassifiedBuggy)

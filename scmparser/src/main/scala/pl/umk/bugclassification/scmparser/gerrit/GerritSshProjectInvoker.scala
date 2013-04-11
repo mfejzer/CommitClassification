@@ -14,24 +14,28 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
 
   private val commentSender = new GerritSshCommentOnPatchSetInvoker(port, hostname)
 
+  start
+  
   def dirUrl(): String = { directory }
   
   protected def resetRepo: Unit = {
     fetch
-    createProcessBuilder(GitResetHardOnOriginMasterCommand).run()
+    createProcessBuilder(GitResetHardOnOriginMasterCommand) !
   }
 
   protected def resetRepo(branch: String): Unit = {
     fetch
-    createProcessBuilder(GitResetHardOnBranchCommand(branch)).run()
+    createProcessBuilder(GitResetHardOnBranchCommand(branch)) !
   }
 
   protected def fetch: Unit = {
-    createProcessBuilder(GitFetchCommand).run()
+    createProcessBuilder(GitFetchCommand) !
   }
 
   protected def fetchAndCheckoutFromGerrit(ref: String): Unit = {
-    createProcessBuilder(GitFetchAndCheckoutPatchSet(port, hostname, user, projectName, ref)).run()
+    val fetch = createProcessBuilder(GitFetchFromGerritPatchSet(port, hostname, user, projectName, ref))
+    val checkout = createProcessBuilder(GitCheckoutPatchSet)
+    fetch #&& checkout !
   }
 
   protected def learn: Unit = {
@@ -48,7 +52,8 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
   }
 
   protected def send(sha1: String, isCommitClassifiedBuggy: Boolean): Unit = {
-    commentSender.comment(sha1, if (isCommitClassifiedBuggy) "Commit classified buggy" else "Commit classified clean")
+    val message =  if (isCommitClassifiedBuggy) """'"Commit classified buggy"'""" else """'"Commit classified clean"'"""
+    commentSender.comment(sha1, message)
   }
 
 }

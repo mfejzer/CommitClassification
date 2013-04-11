@@ -12,9 +12,7 @@ import weka.classifiers.Classifier
 class WekaWrapper {
   private val classifier = new weka.classifiers.functions.LibSVM()
 
-  def generateInstancesAndKeys(bags: List[ClassifiedBagOfWords]): (Instances, List[String]) = {
-    val keys = bags.map(bag => bag.map.keySet.toList).flatten.removeDuplicates
-
+  private def generateAttributes(keys: List[String]): (FastVector, FastVector) = {
     val atts = new FastVector()
     keys.map(x => atts.addElement(new Attribute(x)))
 
@@ -24,7 +22,16 @@ class WekaWrapper {
     val classificationAttribute = new Attribute("Classification", classificationAttributeValues)
     atts.addElement(classificationAttribute);
 
-    val instances = new Instances("MyRelation", atts, 0);
+    (atts, classificationAttributeValues)
+  }
+
+  def generateInstancesAndKeys(bags: List[ClassifiedBagOfWords]): (Instances, List[String]) = {
+    val keys = bags.map(bag => bag.map.keySet.toList).flatten.removeDuplicates
+    val attributes = generateAttributes(keys)
+    val atts = attributes._1
+    val classificationAttributeValues = attributes._2
+
+    val instances = new Instances("Training", atts, 0);
     bags.
       map(bag => createTrainingInstance(bag, keys, classificationAttributeValues)).
       foreach(instance => instances.add(instance))
@@ -57,11 +64,15 @@ class WekaWrapper {
     instance
   }
 
-  def createClassificationInstance(bag: BagOfWords, keys: List[String]) = {
+  def createClassificationInstances(bag: BagOfWords, keys: List[String]): Instances = {
+    val attributes = generateAttributes(keys)
     val values = populateValues(bag, keys)
     val instance = new Instance(1.0, values)
-    instance.setClassMissing()
     instance
+    val instances = new Instances("Classification", attributes._1, 0)
+    instances.setClassIndex(instances.numAttributes() - 1)
+    instances.add(instance)
+    instances
   }
 
   def trainSvm(instances: Instances) = {

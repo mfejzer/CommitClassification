@@ -14,7 +14,7 @@ class GerritSshProjectPreparationInvoker(private val port: Int, private val host
 
   private def cloneAndCreateProjectInvokers(projects: List[String]): Map[String, ProjectInvoker] = {
     projects.foreach(projectName =>
-      createProcessBuilder(GitCloneProjectFromGerritCommand(port, hostname, projectName)).
+      createProcessBuilder(GitCloneProjectFromGerritCommand(port, hostname, user, projectName)).
         run())
 
     createProjectInvokers(projects)

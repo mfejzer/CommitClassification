@@ -11,9 +11,10 @@ class Classificator(private val modelDao: ModelDAO) {
       val keys = maybeModel.get._2
       val bag = new BagOfWords(comitContent)
       val wrapper = new WekaWrapper()
-      val instance = wrapper.createClassificationInstance(bag, keys)
-      classifier.classifyInstance(instance)
-      true//Change to something
+      val instances = wrapper.createClassificationInstances(bag, keys)
+      val result = classifier.classifyInstance(instances.firstInstance()) //1.0 for clean, otherwise buggy
+      println(result)
+      (result!=1.0)
     } else {
       false
     }

@@ -15,7 +15,8 @@ case class GerritSshStreamEventsCommand(private val port: Int, private val hostn
 
 case class GerritSshCommentOnPatshSetCommand(private val port: Int, private val hostname: String,
   private val sha1: String, private val message: String) extends GerritSshCommand {
-  def command = List("ssh", "-p", port.toString(), hostname, "gerrit", "review", "-m", message, sha1)
+  def command =
+    List("ssh", "-p", port.toString(), hostname, "gerrit", "review", "-m", message, "--code-review", "0", sha1)
 }
 
 case class GerritSshLsProjectsCommand(private val port: Int, private val hostname: String)
@@ -24,16 +25,18 @@ case class GerritSshLsProjectsCommand(private val port: Int, private val hostnam
 }
 
 case class GitCloneProjectFromGerritCommand(private val port: Int, private val hostname: String,
-  private val projectName: String) extends GitCommand with GerritSshCommand {
-  def command = List("git", "clone", "--bare",
-    "ssh:" + hostname + ":" + port.toString() + "/" + projectName + ".git",
-    projectName + ".git") //git clone --bare "ssh://review.example.com:29418/$p.git" "$p.git"
+  private val user: String, private val projectName: String) extends GitCommand with GerritSshCommand {
+  def command =
+    List("git", "clone", "ssh://" + user + "@" + hostname + ":" + port.toString() + "/" + projectName)
 }
 
-case class GitFetchAndCheckoutPatchSet(private val port: Int, private val hostname: String,
+case class GitFetchFromGerritPatchSet(private val port: Int, private val hostname: String,
   private val user: String, private val projectName: String, private val ref: String)
   extends GitCommand with GerritSshCommand {
-  def command = List("git", "fetch",
-    "ssh://" + user + "@" + hostname + ":" + port + "/" + projectName, ref,
-    "&& git checkout FETCH_HEAD")
+  def command =
+    List("git", "fetch", "ssh://" + user + "@" + hostname + ":" + port + "/" + projectName, ref)
+}
+
+case object GitCheckoutPatchSet extends GitCommand {
+  def command = List("git", "checkout", "FETCH_HEAD")
 }

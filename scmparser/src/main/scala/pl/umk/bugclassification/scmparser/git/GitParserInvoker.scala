@@ -3,7 +3,6 @@ import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
 import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
-import pl.umk.bugclassification.scmparser.gerrit.GitFetchAndCheckoutPatchSet
 
 class GitParserInvoker(private val projectName: String,
   private val repoLocationUrl: String) extends ParserInvoker {
