@@ -1,7 +1,11 @@
 package pl.umk.bugclassification.scmparser.gerrit
 import scala.collection.mutable.MapBuilder
+import scala.sys.process.ProcessBuilder
+import scala.sys.process.ProcessLogger
 
+import pl.umk.bugclassification.scmparser.git.GitLogNoMergesCommand
 import pl.umk.bugclassification.scmparser.training.ModelDAO
+import pl.umk.bugclassification.scmparser.RmCommand
 
 class GerritSshProjectPreparationInvoker(private val port: Int, private val hostname: String,
   private val user: String, private val directory: String,
@@ -12,12 +16,28 @@ class GerritSshProjectPreparationInvoker(private val port: Int, private val host
     createProcessBuilder(GerritSshLsProjectsCommand(port, hostname)).lines.toList
   }
 
-  private def cloneAndCreateProjectInvokers(projects: List[String]): Map[String, ProjectInvoker] = {
-    projects.foreach(projectName =>
-      createProcessBuilder(GitCloneProjectFromGerritCommand(port, hostname, user, projectName)).
-        run())
+  private def clone(projectName: String): ProcessBuilder = {
+    createProcessBuilder(GitCloneProjectFromGerritCommand(port, hostname, user, projectName))
+  }
 
-    createProjectInvokers(projects)
+  private def checkIfValid(projectName: String): ProcessBuilder = {
+    createProcessBuilder(GitLogNoMergesCommand, "/" + projectName)
+  }
+
+  private def rm(projectName: String): ProcessBuilder = {
+    createProcessBuilder(RmCommand(projectName))
+  }
+
+  private def cloneAndCreateProjectInvokers(projects: List[String]): Map[String, ProjectInvoker] = {
+    val validatedProjects = projects.
+      map(projectName => (projectName,
+        (clone(projectName) #&& checkIfValid(projectName)) ! ProcessLogger(line => ())))
+
+    val correctProjects = validatedProjects.filter(x => x._2 == 0).map(x => x._1)
+    val incorrectProjects = validatedProjects.filter(x => x._2 != 0).map(x => x._1)
+    incorrectProjects.foreach(x => rm(x).run())
+
+    createProjectInvokers(correctProjects)
   }
 
   private def createProjectInvokers(projects: List[String]): Map[String, ProjectInvoker] = {

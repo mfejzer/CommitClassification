@@ -10,12 +10,11 @@ import pl.umk.bugclassification.scmparser.gerrit.GerritSshEventsStreamListeningI
 object Launcher {
 
   def main(args: Array[String]): Unit = {
-    val pp = new ProjectPreparer(29418, "machina", "mfejzer", "/home/mfejzer/src/bonus", new ModelDAOImpl)
-    val l = new Learner(pp.projectInvokers)
-    val w = new Worker(pp.projectInvokers)
-    val listeningInvoker = new GerritSshEventsStreamListeningInvoker(29418, "machina",
-      project => ref => sha1 => { println(sha1);w.f(project, ref, sha1) })
-    l.trainOnProject("tmp")
+    val controller = new Controller(29418, "machina", "mfejzer", "/home/mfejzer/src/bonus", new ModelDAOImpl)
+    val worker = new Worker(29418, "machina",controller)
+    controller ! LearnOnProject("tmp")
+    controller ! PreprareAllProjects
+    controller ! LearnOnAllProjects
   }
 
   def tmp = {
