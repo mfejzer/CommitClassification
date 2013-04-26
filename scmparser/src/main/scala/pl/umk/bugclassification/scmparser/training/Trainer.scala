@@ -1,6 +1,7 @@
 package pl.umk.bugclassification.scmparser.training
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
+import java.util.Date
 
 class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: ModelDAO) {
   private val wekaWrapper = new WekaWrapper()
@@ -28,13 +29,14 @@ class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: Mo
   }
 
   def invokeWeka(printAttributes: Boolean, printEvaluation: Boolean) = {
+    println("Trainer preparing instances " + new Date())
     val instancesAndKeys = wekaWrapper.generateInstancesAndKeys(prepareTrainingSet())
     val instances = instancesAndKeys._1
     val keys = instancesAndKeys._2
-
+    println("Trainer before training on instances " + new Date())
     wekaWrapper.trainSvm(instances)
     modelDao.saveModel(parserInvoker.getProjectName, wekaWrapper.saveModel, keys)
-
+    println("Trainer after training on instances " + new Date())
     if (printAttributes) {
       for (i <- 0 to instances.numAttributes() - 1) {
         println(instances.attribute(i))

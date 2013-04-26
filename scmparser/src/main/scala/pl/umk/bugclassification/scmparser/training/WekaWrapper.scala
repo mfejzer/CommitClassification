@@ -8,6 +8,7 @@ import weka.classifiers.functions.SMO
 import weka.classifiers.Evaluation
 import java.util.Random
 import weka.classifiers.Classifier
+import java.util.Date
 
 class WekaWrapper {
   private val classifier = new weka.classifiers.functions.LibSVM()
@@ -19,24 +20,26 @@ class WekaWrapper {
     val classificationAttributeValues = new FastVector();
     classificationAttributeValues.addElement("buggy")
     classificationAttributeValues.addElement("clean")
-    val classificationAttribute = new Attribute("Classification", classificationAttributeValues)
+    val classificationAttribute = new Attribute("WekaWrapperClassification", classificationAttributeValues)
     atts.addElement(classificationAttribute);
 
     (atts, classificationAttributeValues)
   }
 
   def generateInstancesAndKeys(bags: List[ClassifiedBagOfWords]): (Instances, List[String]) = {
+    println("WekaWrapper generateInstancesAndKeys bags size" + bags.size)
     val keys = bags.map(bag => bag.map.keySet.toList).flatten.removeDuplicates
+    println("WekaWrapper generateInstancesAndKeys keys size" + keys.size)
     val attributes = generateAttributes(keys)
     val atts = attributes._1
     val classificationAttributeValues = attributes._2
-
+    println("WekaWrapper generateInstancesAndKeys before createTrainingInstance for each instance " + new Date())
     val instances = new Instances("Training", atts, 0);
     bags.
       map(bag => createTrainingInstance(bag, keys, classificationAttributeValues)).
       foreach(instance => instances.add(instance))
     instances.setClassIndex(instances.numAttributes() - 1)
-
+    println("WekaWrapper generateInstancesAndKeys after createTrainingInstance for each instance " + new Date())
     (instances, keys)
   }
 

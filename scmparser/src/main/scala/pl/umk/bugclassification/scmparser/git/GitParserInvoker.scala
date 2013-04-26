@@ -24,7 +24,7 @@ class GitParserInvoker(private val projectName: String,
   }
 
   private def extractLog(): String = {
-    createProcessBuilder(GitLogNoMergesCommand).lines.mkString("\n")
+    createProcessBuilder(GitLogNoMergesCommand).lines.mkString("\n")+"\n"
   }
 
   def listLoggedCommits(): List[Commit] = {

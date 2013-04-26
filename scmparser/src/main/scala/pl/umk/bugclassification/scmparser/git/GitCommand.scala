@@ -26,7 +26,7 @@ case object GitLogOnelineCommand extends GitCommand {
 }
 
 case object GitLogNoMergesCommand extends GitCommand {
-  def command = List("git", "log", "--name-only")
+  def command = List("git", "log", "--name-only","--no-merges")
 }
 
 case class GitShowCommitCommand(sha1: String) extends GitCommand {
