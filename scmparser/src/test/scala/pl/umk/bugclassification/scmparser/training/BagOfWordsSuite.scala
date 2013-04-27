@@ -2,9 +2,10 @@ package pl.umk.bugclassification.scmparser.training
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import pl.umk.bugclassification.scmparser.TestLoggingConf
 
 @RunWith(classOf[JUnitRunner])
-class BagOfWordsSuite extends FunSuite {
+class BagOfWordsSuite extends FunSuite with TestLoggingConf {
 
   test("check bag of words on 'banana banana ychy ychy ychy'") {
     val bag = new BagOfWords(List("banana banana ychy ychy ychy"))

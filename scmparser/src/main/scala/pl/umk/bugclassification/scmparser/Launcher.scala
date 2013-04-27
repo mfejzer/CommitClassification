@@ -1,17 +1,16 @@
 package pl.umk.bugclassification.scmparser
-import pl.umk.bugclassification.scmparser.git.GitParserInvoker
-import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
-import pl.umk.bugclassification.scmparser.git.ParserInvoker
-import pl.umk.bugclassification.scmparser.training.BagOfWordsWordParser
-import pl.umk.bugclassification.scmparser.training.Classificator
-import pl.umk.bugclassification.scmparser.training.ModelDAOImpl
-import pl.umk.bugclassification.scmparser.gerrit.GerritSshEventsStreamListeningInvoker
 
-object Launcher {
+import pl.umk.bugclassification.scmparser.gerrit.GerritSshEventsStreamListeningInvoker
+import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
+import pl.umk.bugclassification.scmparser.git.GitParserInvoker
+import pl.umk.bugclassification.scmparser.git.ParserInvoker
+import pl.umk.bugclassification.scmparser.training.ModelDAOImpl
+
+object Launcher extends LoggingConf{
 
   def main(args: Array[String]): Unit = {
     val controller = new Controller(29418, "machina", "mfejzer", "/home/mfejzer/src/bonus", new ModelDAOImpl)
-    val worker = new Worker(29418, "machina",controller)
+    val worker = new Worker(29418, "machina", controller)
     controller ! LearnOnProject("tmp")
     controller ! PreprareAllProjects
     controller ! LearnOnAllProjects

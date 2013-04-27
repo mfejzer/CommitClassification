@@ -3,9 +3,10 @@ package pl.umk.bugclassification.scmparser.git.parsers
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import pl.umk.bugclassification.scmparser.TestLoggingConf
 
 @RunWith(classOf[JUnitRunner])
-class CommitParserSuite extends FunSuite {
+class CommitParserSuite extends FunSuite with TestLoggingConf {
 
   test("parsing correct log") {
     val log = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
@@ -99,9 +100,14 @@ Bugzilla/DB/Schema/Pg.pm
 
 """
     val result = CommitParser.parse(CommitParser.commitList, log)
-    assert(result.successful===true)
+    assert(result.successful === true)
     assert(result.get.length === 5)
-    result.get.foreach(println)
+    assert(result.get.map(x => (x.author == "Max Kanat-Alexander <mkanat@bugzilla.org>")).toList.reduce((x, y) => (x && y)))
+    assert(result.get(0).filenames.length===1)
+    assert(result.get(1).filenames.length===1)
+    assert(result.get(2).filenames.length===0)
+    assert(result.get(3).filenames.length===0)
+    assert(result.get(4).filenames.length===1)
   }
 
   test("parrsing correct log containing commit with no files") {

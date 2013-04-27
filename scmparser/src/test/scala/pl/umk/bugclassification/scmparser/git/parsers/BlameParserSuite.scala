@@ -3,9 +3,10 @@ package pl.umk.bugclassification.scmparser.git.parsers
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import pl.umk.bugclassification.scmparser.TestLoggingConf
 
 @RunWith(classOf[JUnitRunner])
-class BlameParserSuite extends FunSuite {
+class BlameParserSuite extends FunSuite with TestLoggingConf {
 
   test("parsing correct blame") {
     val what = """64edf2ea8e6b82ed7945f1123beb02d60209a4d3 Main.hs     (Mikołaj Fejzer 2012-09-05 20:19:07 +0200  1) {-# LANGUAGE NoMonomorphismRestriction, OverloadedStrings,CPP, DeriveDataTypea
@@ -24,7 +25,6 @@ a142dba0c6878e03cd3c6eb2794ee6e41acd63fa Diagrams.hs (Mikołaj Fejzer 2012-07-29
 """
     val result = BlameParser.parse(BlameParser.blameList, what)
     assert(result.successful)
-//    result.get.map(x=> println(x))
     assert(result.get(0).sha1=="64edf2ea8e6b82ed7945f1123beb02d60209a4d3")
     assert(result.get(0).filename=="Main.hs")
     assert(result.get(5).sha1=="3836276186657c0fc469f41c1c0b46eb9fd61f4c")

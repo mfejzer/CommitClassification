@@ -16,6 +16,7 @@ class BagOfWords(val showOfCommit: List[String]) {
     return (map - "")
   }
   val map = generateMap()
+
 }
 
 object BagOfWordsWordParser extends RegexParsers {

@@ -1,6 +1,7 @@
 package pl.umk.bugclassification.scmparser.training
+import com.codahale.logula.Logging
 
-class Classificator(private val modelDao: ModelDAO) {
+class Classificator(private val modelDao: ModelDAO) extends Logging {
   /**
    * Returns true if commit is buggy for project, false otherwise
    */
@@ -11,10 +12,10 @@ class Classificator(private val modelDao: ModelDAO) {
       val keys = maybeModel.get._2
       val bag = new BagOfWords(comitContent)
       val wrapper = new WekaWrapper()
-      val instances = wrapper.createClassificationInstances(bag, keys)
+      val instances = wrapper.createClassificationInstances(bag, keys.toArray[String])
       val result = classifier.classifyInstance(instances.firstInstance()) //1.0 for clean, otherwise buggy
-      println(result)
-      (result!=1.0)
+      log.info("classificateCommit result " + result)
+      (result != 1.0)
     } else {
       false
     }

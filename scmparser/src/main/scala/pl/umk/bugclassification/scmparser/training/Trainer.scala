@@ -2,8 +2,9 @@ package pl.umk.bugclassification.scmparser.training
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
 import java.util.Date
+import com.codahale.logula.Logging
 
-class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: ModelDAO) {
+class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: ModelDAO) extends Logging{
   private val wekaWrapper = new WekaWrapper()
 
   def prepareSha1WithClassificationForTrainingSet(): (List[(String, Boolean)]) = {
@@ -29,18 +30,18 @@ class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: Mo
   }
 
   def invokeWeka(printAttributes: Boolean, printEvaluation: Boolean) = {
-    println("Trainer preparing instances " + new Date())
+    log.info("invokeWeka preparing instances")
     val instancesAndKeys = wekaWrapper.generateInstancesAndKeys(prepareTrainingSet())
     val instances = instancesAndKeys._1
     val keys = instancesAndKeys._2
-    println("Trainer before training on instances " + new Date())
+    log.info("invokeWeka before training on instances")
     wekaWrapper.trainSvm(instances)
-    modelDao.saveModel(parserInvoker.getProjectName, wekaWrapper.saveModel, keys)
-    println("Trainer after training on instances " + new Date())
+    modelDao.saveModel(parserInvoker.getProjectName, wekaWrapper.saveModel, keys.toList)
+    log.info("invokeWeka after training on instances")
     if (printAttributes) {
       for (i <- 0 to instances.numAttributes() - 1) {
-        println(instances.attribute(i))
-        println(instances.attributeStats(i))
+        log.info(instances.attribute(i).toString())
+        log.info(instances.attributeStats(i).toString())
       }
     }
     if (printEvaluation) {

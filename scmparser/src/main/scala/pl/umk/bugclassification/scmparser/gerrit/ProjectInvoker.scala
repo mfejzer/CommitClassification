@@ -3,8 +3,9 @@ import scala.actors.Actor
 import pl.umk.bugclassification.scmparser.Classify
 import pl.umk.bugclassification.scmparser.Learn
 import pl.umk.bugclassification.scmparser.InvokerOnDirectory
+import com.codahale.logula.Logging
 
-trait ProjectInvoker extends Actor with InvokerOnDirectory{
+trait ProjectInvoker extends Actor with InvokerOnDirectory with Logging{
   protected def resetRepo: Unit
 
   protected def resetRepo(branch: String): Unit
@@ -31,7 +32,7 @@ trait ProjectInvoker extends Actor with InvokerOnDirectory{
           learn
         }
         case Classify(ref, sha1) => {
-          println("Classify "+ref+" "+sha1)
+          log.info("Classify "+ref+" "+sha1)
           fetchAndCheckoutFromGerrit(ref)
           val isCommitClassifiedBuggy = classify(ref, sha1)
           send(sha1, isCommitClassifiedBuggy)

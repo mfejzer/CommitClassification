@@ -2,9 +2,10 @@ package pl.umk.bugclassification.scmparser.training
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import pl.umk.bugclassification.scmparser.TestLoggingConf
 
 @RunWith(classOf[JUnitRunner])
-class WekaWrapperSuite extends FunSuite {
+class WekaWrapperSuite extends FunSuite with TestLoggingConf {
 
   test("check generateInstances on list containing two instances of BagOfWords") {
     val bag = new ClassifiedBagOfWords(List("aaa aaa banana banana ychy ychy ychy"), false)
