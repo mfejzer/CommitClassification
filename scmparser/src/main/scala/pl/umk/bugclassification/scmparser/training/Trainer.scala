@@ -4,8 +4,9 @@ import pl.umk.bugclassification.scmparser.git.ParserInvoker
 import java.util.Date
 import com.codahale.logula.Logging
 
-class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: ModelDAO) extends Logging{
-  private val wekaWrapper = new WekaWrapper()
+class Trainer(private val parserInvoker: ParserInvoker,
+  private val wekaWrapper: WekaWrapper,
+  private val modelDao: ModelDAO) extends Logging {
 
   def prepareSha1WithClassificationForTrainingSet(): (List[(String, Boolean)]) = {
     val loggedCommits = parserInvoker.listLoggedCommits()
@@ -23,19 +24,26 @@ class Trainer(private val parserInvoker: ParserInvoker, private val modelDao: Mo
 
   def prepareTrainingSet(): List[ClassifiedBagOfWords] = {
     val sha1s = prepareSha1WithClassificationForTrainingSet()
-    val result = sha1s.
+    val bags = sha1s.
       map(x => new ClassifiedBagOfWords(parserInvoker.showCommit(x._1), x._2))
 
-    result
+    log.info("prepareKeysForTrainingSet bags size " + bags.size)
+    bags
+  }
+
+  def prepareKeysForTrainingSet(bags: List[ClassifiedBagOfWords]) = {
+    val keys = bags.map(bag => bag.map.keySet.toList).flatten.removeDuplicates.toArray
+    log.info("prepareKeysForTrainingSet keys size " + keys.size)
+    keys
   }
 
   def invokeWeka(printAttributes: Boolean, printEvaluation: Boolean) = {
     log.info("invokeWeka preparing instances")
-    val instancesAndKeys = wekaWrapper.generateInstancesAndKeys(prepareTrainingSet())
-    val instances = instancesAndKeys._1
-    val keys = instancesAndKeys._2
+    val bags = prepareTrainingSet()
+    val keys = prepareKeysForTrainingSet(bags)
+    val instances = wekaWrapper.generateInstances(bags, keys)
     log.info("invokeWeka before training on instances")
-    wekaWrapper.trainSvm(instances)
+    wekaWrapper.train(instances)
     modelDao.saveModel(parserInvoker.getProjectName, wekaWrapper.saveModel, keys.toList)
     log.info("invokeWeka after training on instances")
     if (printAttributes) {

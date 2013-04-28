@@ -11,7 +11,7 @@ class Classificator(private val modelDao: ModelDAO) extends Logging {
       val classifier = maybeModel.get._1
       val keys = maybeModel.get._2
       val bag = new BagOfWords(comitContent)
-      val wrapper = new WekaWrapper()
+      val wrapper = new WekaSvmWrapper()
       val instances = wrapper.createClassificationInstances(bag, keys.toArray[String])
       val result = classifier.classifyInstance(instances.firstInstance()) //1.0 for clean, otherwise buggy
       log.info("classificateCommit result " + result)

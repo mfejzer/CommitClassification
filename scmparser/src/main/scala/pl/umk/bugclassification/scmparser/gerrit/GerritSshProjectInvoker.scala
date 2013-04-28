@@ -7,6 +7,8 @@ import pl.umk.bugclassification.scmparser.git.GitResetHardOnOriginMasterCommand
 import pl.umk.bugclassification.scmparser.training.Classificator
 import pl.umk.bugclassification.scmparser.training.ModelDAO
 import pl.umk.bugclassification.scmparser.training.Trainer
+import pl.umk.bugclassification.scmparser.training.WekaWrapper
+import pl.umk.bugclassification.scmparser.training.WekaSvmWrapper
 
 class GerritSshProjectInvoker(private val port: Int, private val hostname: String,
   private val user: String, val projectName: String, private val directory: String,
@@ -40,7 +42,7 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
 
   protected def learn: Unit = {
     val parserInvoker = new GitParserInvoker(projectName, directory)
-    val trainer = new Trainer(parserInvoker, modelDao)
+    val trainer = new Trainer(parserInvoker, new WekaSvmWrapper, modelDao)
     trainer.invokeWeka(false, false)
   }
 

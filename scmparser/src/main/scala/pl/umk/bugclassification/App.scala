@@ -5,6 +5,7 @@ import pl.umk.bugclassification.scmparser.LoggingConf
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.training.BagOfWords
 import pl.umk.bugclassification.scmparser.training.Trainer
+import pl.umk.bugclassification.scmparser.training.WekaSvmWrapper
 import pl.umk.bugclassification.scmparser.training.WekaWrapper
 import pl.umk.bugclassification.scmparser.training.ModelDAOImpl
 
@@ -28,7 +29,7 @@ object App extends LoggingConf {
     //    val hostname = conf.hostname.apply()
     //    val user = conf.user.apply()
     val parserInvoker = new GitParserInvoker(conf.projectName.apply, conf.repoPath.apply)
-    val trainer = new Trainer(parserInvoker, new ModelDAOImpl)
+    val trainer = new Trainer(parserInvoker, new WekaSvmWrapper, new ModelDAOImpl)
     val printEval = conf.printEvalResults.get.getOrElse(false)
     val printAttributes = conf.printAttributes.get.getOrElse(false)
     trainer.invokeWeka(printAttributes, printEval)
