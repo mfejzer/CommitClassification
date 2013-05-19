@@ -17,8 +17,8 @@ class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
   //  val user = opt[String]("user", required = true)
   //  val port = opt[Int]("port", required = true)
   //  val hostname = opt[String]("hostname", required = true)
-  val printEvalResults = opt[Boolean]("printEvalResults")
-  val printAttributes = opt[Boolean]("printAttributes")
+//  val printEvalResults = opt[Boolean]("printEvalResults")
+//  val printAttributes = opt[Boolean]("printAttributes")
 }
 
 object App extends LoggingConf {
@@ -30,9 +30,11 @@ object App extends LoggingConf {
     //    val user = conf.user.apply()
     val parserInvoker = new GitParserInvoker(conf.projectName.apply, conf.repoPath.apply)
     val trainer = new Trainer(parserInvoker, new WekaSvmWrapper, new ModelDAOImpl)
-    val printEval = conf.printEvalResults.get.getOrElse(false)
-    val printAttributes = conf.printAttributes.get.getOrElse(false)
-    trainer.invokeWeka(printAttributes, printEval)
+//    val printEval = conf.printEvalResults.get.getOrElse(false)
+//    val printAttributes = conf.printAttributes.get.getOrElse(false)
+//    trainer.invokeWeka(printAttributes, printEval)
+    trainer.measurePerformance
+//    trainer.prepareSha1WithClassificationForTrainingSet
   }
 
 }

@@ -14,7 +14,14 @@ class ProjectPreparer(private val port: Int, private val hostname: String,
     user, directory, modelDao)
   private val currentProjects = getProjectsFromDirectory
 
-  val projectInvokers = if (currentProjects.isEmpty) {
+  def allProjectInvokers = if (currentProjects.isEmpty) {
+    projectPreparationInvoker.cloneAllProjects
+  } else {
+    projectPreparationInvoker.cloneMissingProjects(currentProjects) ++
+      projectPreparationInvoker.prepareExistingProjects(currentProjects)
+  }
+
+  def missingProjectInvokers = if (currentProjects.isEmpty) {
     projectPreparationInvoker.cloneAllProjects
   } else {
     projectPreparationInvoker.cloneMissingProjects(currentProjects)

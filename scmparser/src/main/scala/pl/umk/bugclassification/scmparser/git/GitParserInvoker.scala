@@ -3,9 +3,10 @@ import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
 import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
+import com.codahale.logula.Logging
 
 class GitParserInvoker(private val projectName: String,
-  private val repoLocationUrl: String) extends ParserInvoker {
+  private val repoLocationUrl: String) extends ParserInvoker with Logging {
 
   def dirUrl = repoLocationUrl
 
@@ -24,7 +25,7 @@ class GitParserInvoker(private val projectName: String,
   }
 
   private def extractLog(): String = {
-    createProcessBuilder(GitLogNoMergesCommand).lines.mkString("\n")+"\n"
+    createProcessBuilder(GitLogNoMergesCommand).lines.mkString("\n") + "\n"
   }
 
   def listLoggedCommits(): List[Commit] = {
@@ -50,6 +51,7 @@ class GitParserInvoker(private val projectName: String,
   }
 
   def extractDiffFromCommitForFile(commit: Commit, file: String): List[String] = {
+    log.debug("extractDiffFromCommitForFile " + commit.sha1 + " " + file)
     filterRemovedLines(createProcessBuilder(GitDiffOnFileWithParentCommand(commit, file)).lines.toList)
   }
 
@@ -58,11 +60,19 @@ class GitParserInvoker(private val projectName: String,
   }
 
   def blameOnCommitParentForFile(commit: Commit, file: String): List[Blame] = {
-    BlameParser.blamesFromInput(extractBlame(commit, file))
+    extractBlame(commit, file).map(x => BlameParser.blamesFromInput(x)).getOrElse(List[Blame]())
   }
 
-  def extractBlame(commit: Commit, file: String): String = {
-    createProcessBuilder(GitBlameOnFileWithParentCommand(commit, file)).lines.mkString("\n") + "\n"
+  def extractBlame(commit: Commit, file: String): Option[String] = {
+    log.debug("extractBlame " + commit.sha1 + " " + file)
+    var tmp: Option[String] = None
+    try {
+      val result = createProcessBuilder(GitBlameOnFileWithParentCommand(commit, file)).lines.mkString("\n") + "\n"
+      tmp = Some(result)
+    } catch {
+      case e: Exception => log.error(e.getMessage())
+    }
+    tmp
   }
 
 }

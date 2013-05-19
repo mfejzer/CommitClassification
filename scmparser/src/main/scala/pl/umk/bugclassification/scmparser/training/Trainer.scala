@@ -3,6 +3,9 @@ import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
 import java.util.Date
 import com.codahale.logula.Logging
+import weka.filters.supervised.instance.StratifiedRemoveFolds
+import weka.filters.Filter
+import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 
 class Trainer(private val parserInvoker: ParserInvoker,
   private val wekaWrapper: WekaWrapper,
@@ -10,11 +13,14 @@ class Trainer(private val parserInvoker: ParserInvoker,
 
   def prepareSha1WithClassificationForTrainingSet(): (List[(String, Boolean)]) = {
     val loggedCommits = parserInvoker.listLoggedCommits()
-    val errorsSHA1s = loggedCommits
+    log.info("prepareSha1WithClassificationForTrainingSet loggedCommits size " + loggedCommits.size)
+    val commitsContainingFixes = loggedCommits
       .filter(commit => commit.containsFix())
+    log.info("prepareSha1WithClassificationForTrainingSet commitsContainingFixes size " + commitsContainingFixes.size)
+    val errorsSHA1s = commitsContainingFixes
       .map(fixingCommit => { parserInvoker.findCausesForFix(fixingCommit) })
       .flatten.toList.map(x => x._2)
-
+    log.info("prepareSha1WithClassificationForTrainingSet errorsSHA1s size " + errorsSHA1s.size)
     val result = loggedCommits
       .map(commit => commit.sha1)
       .map(sha1 => (sha1, errorsSHA1s.contains(sha1)))
@@ -55,5 +61,39 @@ class Trainer(private val parserInvoker: ParserInvoker,
     if (printEvaluation) {
       wekaWrapper.printEvaluation(instances)
     }
+  }
+
+  def measurePerformance = {
+    log.info("measurePerformance preparing instances")
+    val bags = prepareTrainingSet()
+    val keys = prepareKeysForTrainingSet(bags)
+    val instances = wekaWrapper.generateInstances(bags, keys)
+    log.info("measurePerformance before spliting instances")
+    val srfTraining = new StratifiedRemoveFolds()
+    srfTraining.setInputFormat(instances)
+    srfTraining.setNumFolds(5)
+    srfTraining.setFold(5)
+    srfTraining.setInvertSelection(true)
+    srfTraining.setSeed(1)
+    val trainingInstances = Filter.useFilter(instances, srfTraining)
+    trainingInstances.setClassIndex(instances.numAttributes() - 1)
+    log.info("measurePerformance before training on instances")
+    wekaWrapper.train(trainingInstances)
+    modelDao.saveModel(parserInvoker.getProjectName, wekaWrapper.saveModel, keys.toList)
+    log.info("measurePerformance after training on instances")
+    log.info("measurePerformance before testing on instances")
+    val srfTesting = new StratifiedRemoveFolds()
+    srfTesting.setInputFormat(instances)
+    srfTesting.setNumFolds(5)
+    srfTesting.setFold(5)
+    srfTesting.setInvertSelection(false)
+    srfTesting.setSeed(1)
+    val testingInstances = Filter.useFilter(instances, srfTesting)
+    testingInstances.setClassIndex(instances.numAttributes() - 1)
+    wekaWrapper.printEvaluation(testingInstances)
+    log.info("measurePerformance after testing on instances")
+
+    log.info(instances.attribute(instances.numAttributes() - 1).toString())
+    log.info(instances.attributeStats(instances.numAttributes() - 1).toString())
   }
 }

@@ -7,14 +7,17 @@ class Controller(private val port: Int, private val hostname: String,
   private val user: String, private val directory: String,
   private val modelDao: ModelDAO) extends Actor {
 
-  var projectInvokers = new ProjectPreparer(port, hostname, user, directory, modelDao).projectInvokers
+  var projectInvokers = new ProjectPreparer(port, hostname, user, directory, modelDao).allProjectInvokers
   start
 
   def act() = {
     loop {
       receive {
         case PreprareAllProjects => {
-          projectInvokers = new ProjectPreparer(port, hostname, user, directory, modelDao).projectInvokers
+          projectInvokers = new ProjectPreparer(port, hostname, user, directory, modelDao).allProjectInvokers
+        }
+        case PreprareMissingProjects => {
+          projectInvokers.++(new ProjectPreparer(port, hostname, user, directory, modelDao).missingProjectInvokers)
         }
         case LearnOnAllProjects => {
           val learner = new Learner(projectInvokers)

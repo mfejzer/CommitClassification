@@ -55,7 +55,11 @@ class GerritSshProjectPreparationInvoker(private val port: Int, private val host
 
   def cloneMissingProjects(currentProjects: List[String]): Map[String, ProjectInvoker] = {
     val projects = getAllProjects.filterNot(projectName => currentProjects.contains(projectName))
-    createProjectInvokers(currentProjects) ++ cloneAndCreateProjectInvokers(projects)
+    cloneAndCreateProjectInvokers(projects)
   }
 
+  def prepareExistingProjects(currentProjects: List[String]): Map[String, ProjectInvoker] = {
+    val projects = getAllProjects.filter(projectName => currentProjects.contains(projectName))
+    createProjectInvokers(projects)
+  }
 }

@@ -36,7 +36,7 @@ trait WekaWrapper extends Logging {
     log.info("generateInstances before createTrainingInstance for each instance ")
     val instances = new Instances("Training", atts, 0);
     bags.par.
-      map(bag => createTrainingInstance(bag, keys, buggyValue, cleanValue)).
+      map(bag => createTrainingInstance(bag, keys, buggyValue, cleanValue)).seq.
       foreach(instance => instances.add(instance))
     instances.setClassIndex(instances.numAttributes() - 1)
     log.info("generateInstances after createTrainingInstance for each instance ")

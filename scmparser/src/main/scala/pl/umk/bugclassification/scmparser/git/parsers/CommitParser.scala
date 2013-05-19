@@ -50,6 +50,7 @@ object CommitParser extends RegexParsers with CommonParser {
   def commitsFromLog(input: String): List[Commit] = parseAll(commitList, input) match {
     case Success(result, _) => result
     case failure: NoSuccess => {
+      log.error(failure.toString)
       scala.sys.error(failure.toString)
     }
   }

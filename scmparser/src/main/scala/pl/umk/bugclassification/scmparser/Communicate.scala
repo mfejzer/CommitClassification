@@ -2,6 +2,7 @@ package pl.umk.bugclassification.scmparser
 
 abstract sealed class Communicate
 case class PreprareAllProjects extends Communicate
+case class PreprareMissingProjects extends Communicate
 case class LearnOnAllProjects extends Communicate
 case class LearnOnProject(project: String) extends Communicate
 case class LearnOnProjectAndBranch(project: String, branch: String) extends Communicate

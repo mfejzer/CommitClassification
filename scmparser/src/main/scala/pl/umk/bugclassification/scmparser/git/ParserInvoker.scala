@@ -12,5 +12,5 @@ trait ParserInvoker extends InvokerOnDirectory {
   def findCausesForFix(fix: Commit): List[(Commit, String)]
   def extractDiffFromCommitForFile(commit: Commit, file: String): List[String]
   def blameOnCommitParentForFile(commit: Commit, file: String): List[Blame]
-  def extractBlame(commit: Commit, file: String): String
+  def extractBlame(commit: Commit, file: String): Option[String]
 }
