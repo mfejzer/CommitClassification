@@ -1,4 +1,4 @@
-package pl.umk.bugclassification.scmparser
+package pl.umk.bugclassification.scmparser.invokers
 
 import scala.collection.JavaConversions.seqAsJavaList
 

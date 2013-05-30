@@ -7,7 +7,6 @@ import pl.umk.bugclassification.scmparser.git.GitResetHardOnOriginMasterCommand
 import pl.umk.bugclassification.scmparser.training.Classificator
 import pl.umk.bugclassification.scmparser.training.ModelDAO
 import pl.umk.bugclassification.scmparser.training.Trainer
-import pl.umk.bugclassification.scmparser.training.WekaWrapper
 import pl.umk.bugclassification.scmparser.training.WekaSvmWrapper
 
 class GerritSshProjectInvoker(private val port: Int, private val hostname: String,
@@ -17,9 +16,9 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
   private val commentSender = new GerritSshCommentOnPatchSetInvoker(port, hostname)
 
   start
-  
+
   def dirUrl(): String = { directory }
-  
+
   protected def resetRepo: Unit = {
     fetch
     createProcessBuilder(GitResetHardOnOriginMasterCommand) !
@@ -54,7 +53,7 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
   }
 
   protected def send(sha1: String, isCommitClassifiedBuggy: Boolean): Unit = {
-    val message =  if (isCommitClassifiedBuggy) """'"Commit classified buggy"'""" else """'"Commit classified clean"'"""
+    val message = if (isCommitClassifiedBuggy) """'"Commit classified buggy"'""" else """'"Commit classified clean"'"""
     commentSender.comment(sha1, message)
   }
 

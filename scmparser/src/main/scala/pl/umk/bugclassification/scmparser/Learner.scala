@@ -1,8 +1,6 @@
 package pl.umk.bugclassification.scmparser
-import pl.umk.bugclassification.scmparser.training.ModelDAO
-import pl.umk.bugclassification.scmparser.git.GitParserInvoker
-import pl.umk.bugclassification.scmparser.training.Trainer
 import pl.umk.bugclassification.scmparser.gerrit.ProjectInvoker
+import pl.umk.bugclassification.scmparser.messages.Learn
 
 class Learner(private val projectInvokers: Map[String, ProjectInvoker]) {
 

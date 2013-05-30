@@ -1,9 +1,11 @@
 package pl.umk.bugclassification.scmparser.gerrit
 import scala.actors.Actor
-import pl.umk.bugclassification.scmparser.Classify
-import pl.umk.bugclassification.scmparser.Learn
-import pl.umk.bugclassification.scmparser.InvokerOnDirectory
+
 import com.codahale.logula.Logging
+
+import pl.umk.bugclassification.scmparser.invokers.InvokerOnDirectory
+import pl.umk.bugclassification.scmparser.messages.Classify
+import pl.umk.bugclassification.scmparser.messages.Learn
 
 trait ProjectInvoker extends Actor with InvokerOnDirectory with Logging{
   protected def resetRepo: Unit

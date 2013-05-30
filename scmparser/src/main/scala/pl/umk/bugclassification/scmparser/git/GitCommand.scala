@@ -1,9 +1,9 @@
 package pl.umk.bugclassification.scmparser.git
 
 import scala.collection.JavaConversions.seqAsJavaList
-
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
-import pl.umk.bugclassification.scmparser.Command
+import pl.umk.bugclassification.scmparser.invokers.Command
+
 
 trait GitCommand extends Command {
 

@@ -1,8 +1,9 @@
 package pl.umk.bugclassification.scmparser.gerrit
 
-import scala.collection.JavaConversions._
-import pl.umk.bugclassification.scmparser.Command
+import scala.collection.JavaConversions.seqAsJavaList
+
 import pl.umk.bugclassification.scmparser.git.GitCommand
+import pl.umk.bugclassification.scmparser.invokers.Command
 
 trait GerritSshCommand extends Command {
 

@@ -1,7 +1,8 @@
 package pl.umk.bugclassification.scmparser.gerrit
 
-import pl.umk.bugclassification.scmparser.Invoker
 import com.codahale.logula.Logging
+
+import pl.umk.bugclassification.scmparser.invokers.Invoker
 
 class GerritSshCommentOnPatchSetInvoker(private val port: Int, private val hostname: String)
   extends Invoker with Logging {

@@ -4,9 +4,12 @@ import pl.umk.bugclassification.scmparser.gerrit.GerritSshEventsStreamListeningI
 import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
 import pl.umk.bugclassification.scmparser.git.GitParserInvoker
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
+import pl.umk.bugclassification.scmparser.messages.LearnOnAllProjects
+import pl.umk.bugclassification.scmparser.messages.LearnOnProject
+import pl.umk.bugclassification.scmparser.messages.PreprareAllProjects
 import pl.umk.bugclassification.scmparser.training.ModelDAOImpl
 
-object Launcher extends LoggingConf{
+object Launcher extends LoggingConf {
 
   def main(args: Array[String]): Unit = {
     val controller = new Controller(29418, "machina", "mfejzer", "/home/mfejzer/src/bonus", new ModelDAOImpl)

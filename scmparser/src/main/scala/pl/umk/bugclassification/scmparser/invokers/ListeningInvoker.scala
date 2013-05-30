@@ -1,8 +1,9 @@
-package pl.umk.bugclassification.scmparser
+package pl.umk.bugclassification.scmparser.invokers
+
+import java.io.OutputStream
 import scala.sys.process.Process
 import scala.sys.process.ProcessIO
 import scala.concurrent.SyncVar
-import java.io.OutputStream
 
 trait ListeningInvoker {
 

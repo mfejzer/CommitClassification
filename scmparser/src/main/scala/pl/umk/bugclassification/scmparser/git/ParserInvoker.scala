@@ -1,7 +1,7 @@
 package pl.umk.bugclassification.scmparser.git
 import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
-import pl.umk.bugclassification.scmparser.InvokerOnDirectory
+import pl.umk.bugclassification.scmparser.invokers.InvokerOnDirectory
 
 trait ParserInvoker extends InvokerOnDirectory {
   def getProjectName: String

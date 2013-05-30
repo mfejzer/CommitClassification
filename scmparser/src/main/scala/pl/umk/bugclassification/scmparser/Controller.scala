@@ -1,7 +1,15 @@
 package pl.umk.bugclassification.scmparser
-import pl.umk.bugclassification.scmparser.training.ModelDAO
+
 import scala.actors.Actor
-import pl.umk.bugclassification.scmparser.gerrit.ProjectInvoker
+
+import pl.umk.bugclassification.scmparser.messages.Classify
+import pl.umk.bugclassification.scmparser.messages.ClassifyOnProject
+import pl.umk.bugclassification.scmparser.messages.LearnOnAllProjects
+import pl.umk.bugclassification.scmparser.messages.LearnOnProject
+import pl.umk.bugclassification.scmparser.messages.LearnOnProjectAndBranch
+import pl.umk.bugclassification.scmparser.messages.PreprareAllProjects
+import pl.umk.bugclassification.scmparser.messages.PreprareMissingProjects
+import pl.umk.bugclassification.scmparser.training.ModelDAO
 
 class Controller(private val port: Int, private val hostname: String,
   private val user: String, private val directory: String,

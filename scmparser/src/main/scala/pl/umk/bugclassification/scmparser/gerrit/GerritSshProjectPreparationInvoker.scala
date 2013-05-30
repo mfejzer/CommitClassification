@@ -4,8 +4,8 @@ import scala.sys.process.ProcessBuilder
 import scala.sys.process.ProcessLogger
 
 import pl.umk.bugclassification.scmparser.git.GitLogNoMergesCommand
+import pl.umk.bugclassification.scmparser.invokers.RmCommand
 import pl.umk.bugclassification.scmparser.training.ModelDAO
-import pl.umk.bugclassification.scmparser.RmCommand
 
 class GerritSshProjectPreparationInvoker(private val port: Int, private val hostname: String,
   private val user: String, private val directory: String,

@@ -1,6 +1,6 @@
 package pl.umk.bugclassification.scmparser.gerrit
 
-import pl.umk.bugclassification.scmparser.InvokerOnDirectory
+import pl.umk.bugclassification.scmparser.invokers.InvokerOnDirectory
 
 trait ProjectPreparationInvoker extends InvokerOnDirectory {
 
