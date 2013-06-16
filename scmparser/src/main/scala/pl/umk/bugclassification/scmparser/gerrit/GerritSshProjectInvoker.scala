@@ -42,7 +42,7 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
   protected def learn: Unit = {
     val parserInvoker = new GitParserInvoker(projectName, directory)
     val trainer = new Trainer(parserInvoker, new WekaSvmWrapper, modelDao)
-    trainer.invokeWeka(false, false)
+    trainer.measurePerformance
   }
 
   protected def classify(ref: String, sha1: String): Boolean = {

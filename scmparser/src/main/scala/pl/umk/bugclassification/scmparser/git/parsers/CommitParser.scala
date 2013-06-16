@@ -6,22 +6,15 @@ object CommitParser extends RegexParsers with CommonParser {
   override def skipWhitespace = false
 
   def commitList: Parser[List[Commit]] = (commit).* //<~ (not(sha1)|not(newline))
-  def commit: Parser[Commit] = (properCommit<~newline.?) 
-  def properCommit = (sha1 ~ author ~ date ~ message ~ filenames) ^^ {
-    case s ~ a ~ d ~ m ~ f => {
-      new Commit(s, a, d, m, f)
+  def commit: Parser[Commit] = (properCommit <~ newline.?)
+  def properCommit =
+    (sha1 ~ author ~ date ~ message ~ filenames) ^^ {
+      case s ~ a ~ d ~ m ~ f => {
+        val c = new Commit(s, a, d, m, f)
+        log.debug("CommitParser properCommit parsed " + c)
+        c
+      }
     }
-  }
-  def noFilesCommit = (sha1 ~ author ~ date ~ message) ^^ {
-    case s ~ a ~ d ~ m => {
-      new Commit(s, a, d, m, List())
-    }
-  }
-  def noFilesEmptyRepoCommit = (sha1 ~ author ~ date ~ messageWhenNoFilesArePresent) ^^ {
-    case s ~ a ~ d ~ m => {
-      new Commit(s, a, d, m, List())
-    }
-  }
 
   def sha1: Parser[String] =
     ("commit(\\s*)".r ~> sha1Text <~ newline) ^^ { case s => s }
@@ -39,7 +32,7 @@ object CommitParser extends RegexParsers with CommonParser {
     (newline ~> messageText) ^^ { case mt => mt }
 
   def filenames: Parser[List[String]] =
-    (newline ~> (rep1sep(filename, newline)) <~ newline).?  ^^ { case of =>of.getOrElse(List[String]()) }
+    (newline ~> (rep1sep(filename, newline)) <~ newline).? ^^ { case of => of.getOrElse(List[String]()) }
 
   def authorName: Parser[String] = ".*[^\\n]".r ^^ { case s => s }
 

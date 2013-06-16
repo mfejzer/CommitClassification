@@ -61,7 +61,7 @@ class GitParserInvoker(private val projectName: String,
   }
 
   def blameOnCommitParentForFile(commit: Commit, file: String): List[Blame] = {
-    extractBlame(commit, file).map(x => BlameParser.blamesFromInput(x)).getOrElse(List[Blame]())
+    extractBlame(commit, file).map(x => BlameParser.blamesFromInput(x)).flatMap(x=>x).getOrElse(List[Blame]())
   }
 
   def extractBlame(commit: Commit, file: String): Option[String] = {

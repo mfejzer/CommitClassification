@@ -151,6 +151,54 @@ Date:   Sun Sep 30 19:49:00 2012 +0200
     assert(result.get.map(x => (x.author == "Mikołaj Fejzer <mfejzer@gmail.com>")).toList.reduce((x, y) => (x && y)))
   }
 
+  test("parsing correct log containing commits with Signed-off-by and Change-Id metadata"){
+    val log =
+"""commit 704f311b0c384315fad5306734871b77b2146e05
+Author: Robin Rosenberg <robin.rosenberg@dewire.com>
+Date:   Sun Nov 25 17:34:34 2012 +0100
+
+    Reduce memory footprint when calculating merge bases
+    
+    This only matters when there is a huge number of refs.
+    
+    Change-Id: I2e0ea4a9da7fb756354bd6df9f6051e5b0db9a7f
+    Signed-off-by: Matthias Sohn <matthias.sohn@sap.com>
+
+org.eclipse.egit.core/src/org/eclipse/egit/core/RevUtils.java
+org.eclipse.egit.ui/src/org/eclipse/egit/ui/internal/history/CommitInfoBuilder.java
+
+commit 8be8195083c46ef3197c7c7c16095738995b02a9
+Author: Robin Rosenberg <robin.rosenberg@dewire.com>
+Date:   Mon Nov 26 01:01:35 2012 +0100
+
+    Sort the stashed commits in the Git Repository view properly
+    
+    The stashed commits should be sorted by order, not by the string label.
+    
+    Change-Id: I189b32291c7626a85b739d5d05e9268be476f1ed
+    Signed-off-by: Matthias Sohn <matthias.sohn@sap.com>
+
+org.eclipse.egit.ui/src/org/eclipse/egit/ui/internal/repository/tree/RepositoriesViewSorter.java
+
+commit 3a5d54bbc60fa0b2571f018028e9bcc2b70b1f55
+Author: Robin Stocker <robin@nibor.org>
+Date:   Tue Nov 27 00:29:43 2012 +0100
+
+    Update copyright dates
+    
+    For change I99f7cd610d069d4ae9429c2ff8b756ebdddc1a60.
+    
+    Change-Id: I7357680625027017eb00de4dfeb15ba715850758
+
+org.eclipse.egit.core.test/src/org/eclipse/egit/core/test/GitProjectSetCapabilityTest.java
+org.eclipse.egit.core/src/org/eclipse/egit/core/internal/ProjectReferenceImporter.java
+
+"""
+    val result = CommitParser.parse(CommitParser.commitList, log)
+    assert(result.successful)
+    assert(result.get.length == 3)
+  }
+  
   test("parsing correct commit") {
     val commit = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
 Author: Mikołaj Fejzer <mfejzer@gmail.com>

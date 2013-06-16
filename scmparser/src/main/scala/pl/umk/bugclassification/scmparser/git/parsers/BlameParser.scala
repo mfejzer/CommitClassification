@@ -14,11 +14,11 @@ object BlameParser extends RegexParsers with CommonParser {
   def metadata: Parser[String] = "\\([^\\)]*\\)".r ^^ { case s => s }
   def line: Parser[String] = ".*".r ^^ { case s => s }
 
-  def blamesFromInput(input: String): List[Blame] = parseAll(blameList, input) match {
-    case Success(result, _) => result
+  def blamesFromInput(input: String): Option[List[Blame]] = parseAll(blameList, input) match {
+    case Success(result, _) => Some(result)
     case failure: NoSuccess => {
       log.error(failure.toString)
-      scala.sys.error(failure.toString)
+      None
     }
   }
   

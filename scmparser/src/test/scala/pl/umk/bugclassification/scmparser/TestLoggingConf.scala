@@ -5,10 +5,10 @@ import org.apache.log4j.Level
 trait TestLoggingConf {
   Logging.configure { log =>
     log.registerWithJMX = false
-    log.level = Level.INFO
+    log.level = Level.DEBUG
     
     log.console.enabled = false
-    log.console.threshold = Level.WARN
+    log.console.threshold = Level.DEBUG
     
     log.file.enabled = false
     log.syslog.enabled = false
