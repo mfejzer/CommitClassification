@@ -21,3 +21,13 @@ $ mvn clean install
 
 How to run (in folder scmparser) and receive message describing parameters:
 $ java -jar target/scmparser-1.0-SNAPSHOT.jar --help
+<<<<<<< HEAD
+=======
+
+What parameters mean:
+  -d, --directory  <arg>                Directory to keep cloned projects
+  -h, --hostname  <arg>                 Gerrit hostname
+  -p, --port  <arg>                     Gerrit port
+  -r, --repeatLearnAfterHours  <arg>    Directory refresh interval
+  -u, --user  <arg>                     Gerrit user
+>>>>>>> Create README.md
