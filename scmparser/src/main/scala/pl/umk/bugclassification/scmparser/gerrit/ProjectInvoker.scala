@@ -23,7 +23,7 @@ trait ProjectInvoker extends Actor with InvokerOnDirectory with Logging{
   protected def send(sha1: String, isCommitClassifiedBuggy: Boolean): Unit
 
   def act() {
-    while (true) {
+   loop {
       receive {
         case Learn("master") => {
           resetRepo

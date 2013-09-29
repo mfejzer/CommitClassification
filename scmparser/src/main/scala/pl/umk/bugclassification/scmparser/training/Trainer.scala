@@ -1,11 +1,9 @@
 package pl.umk.bugclassification.scmparser.training
-import pl.umk.bugclassification.scmparser.git.GitParserInvoker
-import pl.umk.bugclassification.scmparser.git.ParserInvoker
-import java.util.Date
 import com.codahale.logula.Logging
+
+import pl.umk.bugclassification.scmparser.git.ParserInvoker
 import weka.filters.supervised.instance.StratifiedRemoveFolds
 import weka.filters.Filter
-import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
 
 class Trainer(private val parserInvoker: ParserInvoker,
   private val wekaWrapper: WekaWrapper,

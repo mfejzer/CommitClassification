@@ -31,13 +31,13 @@ case class GitCloneProjectFromGerritCommand(private val port: Int, private val h
     List("git", "clone", "ssh://" + user + "@" + hostname + ":" + port.toString() + "/" + projectName)
 }
 
-case class GitFetchFromGerritPatchSet(private val port: Int, private val hostname: String,
+case class GitFetchFromGerritPatchSetCommand(private val port: Int, private val hostname: String,
   private val user: String, private val projectName: String, private val ref: String)
   extends GitCommand with GerritSshCommand {
   def command =
     List("git", "fetch", "ssh://" + user + "@" + hostname + ":" + port + "/" + projectName, ref)
 }
 
-case object GitCheckoutPatchSet extends GitCommand {
+case object GitCheckoutPatchSetCommand extends GitCommand {
   def command = List("git", "checkout", "FETCH_HEAD")
 }

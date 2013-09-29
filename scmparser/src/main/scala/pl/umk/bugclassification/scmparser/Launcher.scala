@@ -1,15 +1,13 @@
 package pl.umk.bugclassification.scmparser
 
-import actors.{ Actor, TIMEOUT }
-import pl.umk.bugclassification.scmparser.gerrit.GerritSshEventsStreamListeningInvoker
-import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
-import pl.umk.bugclassification.scmparser.git.GitParserInvoker
-import pl.umk.bugclassification.scmparser.git.ParserInvoker
+import scala.actors.Actor
+import scala.actors.TIMEOUT
+
 import pl.umk.bugclassification.scmparser.messages.LearnOnAllProjects
-import pl.umk.bugclassification.scmparser.messages.LearnOnProject
 import pl.umk.bugclassification.scmparser.messages.PreprareAllProjects
 import pl.umk.bugclassification.scmparser.messages.PreprareMissingProjects
 import pl.umk.bugclassification.scmparser.training.ModelDAOImpl
+
 
 object Launcher extends LoggingConf {
 

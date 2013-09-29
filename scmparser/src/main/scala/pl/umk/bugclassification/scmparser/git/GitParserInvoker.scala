@@ -48,7 +48,10 @@ class GitParserInvoker(private val projectName: String,
   private def process(pair: (List[String], List[Blame])): List[String] = {
     val diffs = pair._1
     val blames = pair._2
-    diffs.map(line => { blames.filter(blame => blame.line == line).map(blame => blame.sha1) }).flatten.removeDuplicates
+    diffs.map(line => {
+      blames.filter(blame => blame.line == line).
+      map(blame => blame.sha1)
+    }).flatten.removeDuplicates
   }
 
   def extractDiffFromCommitForFile(commit: Commit, file: String): List[String] = {
@@ -61,7 +64,7 @@ class GitParserInvoker(private val projectName: String,
   }
 
   def blameOnCommitParentForFile(commit: Commit, file: String): List[Blame] = {
-    extractBlame(commit, file).map(x => BlameParser.blamesFromInput(x)).flatMap(x=>x).getOrElse(List[Blame]())
+    extractBlame(commit, file).map(x => BlameParser.blamesFromInput(x)).flatMap(x => x).getOrElse(List[Blame]())
   }
 
   def extractBlame(commit: Commit, file: String): Option[String] = {
