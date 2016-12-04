@@ -1,12 +1,10 @@
 package pl.umk.bugclassification.scmparser.gerrit
 
-import com.codahale.logula.Logging
-
 import pl.umk.bugclassification.scmparser.gerrit.parsers.JsonGerritEventStreamParser
 import pl.umk.bugclassification.scmparser.invokers.ListeningInvoker
 
 class GerritSshEventsStreamListeningInvoker(private val port: Int, private val hostname: String,
-  private val executeOnCreatePatchSet: String => String => String => Unit) extends ListeningInvoker with Logging {
+  private val executeOnCreatePatchSet: String => String => String => Unit) extends ListeningInvoker {
   runProcess(GerritSshStreamEventsCommand(port, hostname))
 
   def callback(line: String): Unit = {
@@ -17,7 +15,7 @@ class GerritSshEventsStreamListeningInvoker(private val port: Int, private val h
       val sha1 = event.get.patchSet.revision
       executeOnCreatePatchSet(project)(ref)(sha1)
     } else {
-      log.warn("Not defined event\n" + line)
+//      log.warn("Not defined event\n" + line)
     }
   }
 

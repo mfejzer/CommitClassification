@@ -1,20 +1,21 @@
 package pl.umk.bugclassification.scmparser.git
-import com.codahale.logula.Logging
 
-import pl.umk.bugclassification.scmparser.git.parsers.results.Blame
-import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
-import pl.umk.bugclassification.scmparser.git.parsers.BlameParser
-import pl.umk.bugclassification.scmparser.git.parsers.CommitParser
+import org.slf4j.LoggerFactory
+import pl.umk.bugclassification.scmparser.git.parsers.results.{Blame, Commit}
+import pl.umk.bugclassification.scmparser.git.parsers.{BlameParser, CommitParser}
 
-class GitParserInvoker(private val projectName: String,
-  private val repoLocationUrl: String) extends ParserInvoker with Logging {
+class GitParserInvoker(private val projectName: String, private val repoLocationUrl: String) extends ParserInvoker {
 
-  def dirUrl = repoLocationUrl
+  val log = LoggerFactory.getLogger(classOf[GitParserInvoker])
+
+  def dirUrl: String = repoLocationUrl
 
   def getProjectName = projectName
 
   def listLoggedCommitsSHA1s(): List[String] = {
-    createProcessBuilder(GitLogOnelineCommand).lines.toList.map(x => { (x.split(" ")(0)) })
+    createProcessBuilder(GitLogOnelineCommand).lines.toList.map(x => {
+      x.split(" ")(0)
+    })
   }
 
   def showCommit(sha1: String): List[String] = {
@@ -34,12 +35,11 @@ class GitParserInvoker(private val projectName: String,
   }
 
   def findCausesForFix(fix: Commit): List[(Commit, String)] = {
-    val filesWithDiffs = fix.filenames.map(file => extractDiffFromCommitForFile(fix, file)) //list of (file,removed lines) for commit fix
+    val filesWithDiffs = fix.filenames.map(file => extractDiffFromCommitForFile(fix, file))
+    //list of (file,removed lines) for commit fix
     val blamesPerFile = fix.filenames.map(file => blameOnCommitParentForFile(fix, file))
     val combined = filesWithDiffs.zip(blamesPerFile)
-    val result = combined.
-      map(pair => process(pair)).
-      flatten.removeDuplicates.
+    val result = combined.flatMap(pair => process(pair)).distinct.
       map(bugIntroductingSha1 => (fix, bugIntroductingSha1))
 
     result
@@ -48,33 +48,35 @@ class GitParserInvoker(private val projectName: String,
   private def process(pair: (List[String], List[Blame])): List[String] = {
     val diffs = pair._1
     val blames = pair._2
-    diffs.map(line => {
+    diffs.flatMap(line => {
       blames.filter(blame => blame.line == line).
-      map(blame => blame.sha1)
-    }).flatten.removeDuplicates
+        map(blame => blame.sha1)
+    }).distinct
   }
 
   def extractDiffFromCommitForFile(commit: Commit, file: String): List[String] = {
     log.debug("extractDiffFromCommitForFile " + commit.sha1 + " " + file)
-    filterRemovedLines(createProcessBuilder(GitDiffOnFileWithParentCommand(commit, file)).lines.toList)
+    filterRemovedLines(createProcessBuilder(GitDiffOnFileWithParentCommand(commit, file)).lineStream.toList)
   }
 
   private def filterRemovedLines(fileContent: List[String]): List[String] = {
-    fileContent.filter(x => { x.startsWith("-") && (!x.contains("---")) }).map(x => x.drop(1))
+    fileContent.filter(x => {
+      x.startsWith("-") && (!x.contains("---"))
+    }).map(x => x.drop(1))
   }
 
   def blameOnCommitParentForFile(commit: Commit, file: String): List[Blame] = {
-    extractBlame(commit, file).map(x => BlameParser.blamesFromInput(x)).flatMap(x => x).getOrElse(List[Blame]())
+    extractBlame(commit, file).flatMap(x => BlameParser.blamesFromInput(x)).getOrElse(List[Blame]())
   }
 
   def extractBlame(commit: Commit, file: String): Option[String] = {
     log.debug("extractBlame " + commit.sha1 + " " + file)
     var tmp: Option[String] = None
     try {
-      val result = createProcessBuilder(GitBlameOnFileWithParentCommand(commit, file)).lines.mkString("\n") + "\n"
+      val result = createProcessBuilder(GitBlameOnFileWithParentCommand(commit, file)).lineStream.mkString("\n") + "\n"
       tmp = Some(result)
     } catch {
-      case e: Exception => log.error(e.getMessage())
+      case e: Exception => log.error(e.getMessage)
     }
     tmp
   }

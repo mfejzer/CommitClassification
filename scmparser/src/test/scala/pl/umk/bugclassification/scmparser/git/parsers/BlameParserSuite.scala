@@ -3,10 +3,9 @@ package pl.umk.bugclassification.scmparser.git.parsers
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import pl.umk.bugclassification.scmparser.TestLoggingConf
 
 @RunWith(classOf[JUnitRunner])
-class BlameParserSuite extends FunSuite with TestLoggingConf {
+class BlameParserSuite extends FunSuite {
 
   test("parsing correct blame") {
     val what = """64edf2ea8e6b82ed7945f1123beb02d60209a4d3 Main.hs     (Mikołaj Fejzer 2012-09-05 20:19:07 +0200  1) {-# LANGUAGE NoMonomorphismRestriction, OverloadedStrings,CPP, DeriveDataTypea

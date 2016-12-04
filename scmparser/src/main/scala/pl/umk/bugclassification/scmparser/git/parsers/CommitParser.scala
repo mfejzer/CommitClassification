@@ -1,12 +1,17 @@
 package pl.umk.bugclassification.scmparser.git.parsers
-import scala.util.parsing.combinator.RegexParsers
+import org.slf4j.LoggerFactory
 import pl.umk.bugclassification.scmparser.git.parsers.results.Commit
 
+import scala.util.parsing.combinator.RegexParsers
+
 object CommitParser extends RegexParsers with CommonParser {
+
+  val log = LoggerFactory.getLogger(CommitParser.getClass)
+
   override def skipWhitespace = false
 
-  def commitList: Parser[List[Commit]] = (commit).* //<~ (not(sha1)|not(newline))
-  def commit: Parser[Commit] = (properCommit <~ newline.?)
+  def commitList: Parser[List[Commit]] = commit.* //<~ (not(sha1)|not(newline))
+  def commit: Parser[Commit] = properCommit <~ newline.?
   def properCommit =
     (sha1 ~ author ~ date ~ message ~ filenames) ^^ {
       case s ~ a ~ d ~ m ~ f => {

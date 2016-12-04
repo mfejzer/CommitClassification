@@ -1,15 +1,15 @@
 package pl.umk.bugclassification.scmparser.git.parsers
 
-import org.scalatest.FunSuite
 import org.junit.runner.RunWith
+import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import pl.umk.bugclassification.scmparser.TestLoggingConf
 
 @RunWith(classOf[JUnitRunner])
-class CommitParserSuite extends FunSuite with TestLoggingConf {
+class CommitParserSuite extends FunSuite {
 
   test("parsing correct log") {
-    val log = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
+    val log =
+      """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
 Author: Mikołaj Fejzer <mfejzer@gmail.com>
 Date:   Tue Nov 6 22:37:00 2012 +0100
 
@@ -49,7 +49,7 @@ KnuthBendixCompletion/Tests.hs
     val result = CommitParser.parse(CommitParser.commitList, log)
     assert(result.successful)
     assert(result.get.length == 3)
-    assert(result.get.map(x => (x.author == "Mikołaj Fejzer <mfejzer@gmail.com>")).toList.reduce((x, y) => (x && y)))
+    assert(result.get.map(x => x.author == "Mikołaj Fejzer <mfejzer@gmail.com>").reduce((x, y) => (x && y)))
   }
 
   test("parsing correct log containing multiple commits with no files") {
@@ -103,15 +103,16 @@ Bugzilla/DB/Schema/Pg.pm
     assert(result.successful === true)
     assert(result.get.length === 5)
     assert(result.get.map(x => (x.author == "Max Kanat-Alexander <mkanat@bugzilla.org>")).toList.reduce((x, y) => (x && y)))
-    assert(result.get(0).filenames.length===1)
-    assert(result.get(1).filenames.length===1)
-    assert(result.get(2).filenames.length===0)
-    assert(result.get(3).filenames.length===0)
-    assert(result.get(4).filenames.length===1)
+    assert(result.get(0).filenames.length === 1)
+    assert(result.get(1).filenames.length === 1)
+    assert(result.get(2).filenames.length === 0)
+    assert(result.get(3).filenames.length === 0)
+    assert(result.get(4).filenames.length === 1)
   }
 
   test("parrsing correct log containing commit with no files") {
-    val log = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
+    val log =
+      """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
 Author: Mikołaj Fejzer <mfejzer@gmail.com>
 Date:   Tue Nov 6 22:37:00 2012 +0100
 
@@ -151,9 +152,9 @@ Date:   Sun Sep 30 19:49:00 2012 +0200
     assert(result.get.map(x => (x.author == "Mikołaj Fejzer <mfejzer@gmail.com>")).toList.reduce((x, y) => (x && y)))
   }
 
-  test("parsing correct log containing commits with Signed-off-by and Change-Id metadata"){
+  test("parsing correct log containing commits with Signed-off-by and Change-Id metadata") {
     val log =
-"""commit 704f311b0c384315fad5306734871b77b2146e05
+      """commit 704f311b0c384315fad5306734871b77b2146e05
 Author: Robin Rosenberg <robin.rosenberg@dewire.com>
 Date:   Sun Nov 25 17:34:34 2012 +0100
 
@@ -198,9 +199,10 @@ org.eclipse.egit.core/src/org/eclipse/egit/core/internal/ProjectReferenceImporte
     assert(result.successful)
     assert(result.get.length == 3)
   }
-  
+
   test("parsing correct commit") {
-    val commit = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
+    val commit =
+      """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
 Author: Mikołaj Fejzer <mfejzer@gmail.com>
 Date:   Tue Nov 6 22:37:00 2012 +0100
 
@@ -225,28 +227,32 @@ Persistance.hs
   }
 
   test("parsing correct sha1") {
-    val what = """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
+    val what =
+      """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
       """
     val result = CommitParser.parse(CommitParser.sha1, what)
     assert(result.successful)
   }
 
   test("parsing correct author") {
-    val what = """Author: Mikołaj Fejzer <mfejzer@gmail.com>
+    val what =
+      """Author: Mikołaj Fejzer <mfejzer@gmail.com>
       """
     val result = CommitParser.parse(CommitParser.author, what)
     assert(result.successful)
   }
 
   test("parsing correct date") {
-    val what = """Date:   Tue Nov 6 22:37:00 2012 +0100
+    val what =
+      """Date:   Tue Nov 6 22:37:00 2012 +0100
       """
     val result = CommitParser.parse(CommitParser.date, what)
     assert(result.successful)
   }
 
   test("parsing correct message") {
-    val what = """
+    val what =
+      """
     Removed ArgsState, added AlgorithmStatus
     
     kb,kbc and persistance layer changed to use new type
@@ -256,7 +262,8 @@ Persistance.hs
   }
 
   test("parsing correct message with another commit") {
-    val what = """
+    val what =
+      """
     Removed ArgsState, added AlgorithmStatus
     
     kb,kbc and persistance layer changed to use new type

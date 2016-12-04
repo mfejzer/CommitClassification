@@ -1,16 +1,13 @@
 package pl.umk.bugclassification.scmparser.training
 
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalamock.scalatest.MockFactory
-import org.scalamock.ProxyMockFactory
 import org.scalatest.FunSuite
-
+import org.scalatest.junit.JUnitRunner
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
-import pl.umk.bugclassification.scmparser.TestLoggingConf
 
 @RunWith(classOf[JUnitRunner])
-class TrainerSuite extends FunSuite with MockFactory with ProxyMockFactory with TestLoggingConf {
+class TrainerSuite extends FunSuite with MockFactory {
   test("check key generation") {
     val bag = new ClassifiedBagOfWords(List("aaa aaa banana banana ychy ychy ychy"), false)
     val bag2 = new ClassifiedBagOfWords(List("aaa ff banana banana mniam ychy mniam"), true)

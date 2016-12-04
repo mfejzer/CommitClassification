@@ -15,8 +15,6 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
 
   private val commentSender = new GerritSshCommentOnPatchSetInvoker(port, hostname)
 
-  start
-
   def dirUrl(): String = { directory }
 
   protected def resetRepo: Unit = {

@@ -1,13 +1,15 @@
 package pl.umk.bugclassification.scmparser.training
-import com.codahale.logula.Logging
 
+import org.slf4j.LoggerFactory
 import pl.umk.bugclassification.scmparser.git.ParserInvoker
-import weka.filters.supervised.instance.StratifiedRemoveFolds
 import weka.filters.Filter
+import weka.filters.supervised.instance.StratifiedRemoveFolds
 
 class Trainer(private val parserInvoker: ParserInvoker,
-  private val wekaWrapper: WekaWrapper,
-  private val modelDao: ModelDAO) extends Logging {
+              private val wekaWrapper: WekaWrapper,
+              private val modelDao: ModelDAO) {
+
+  val log = LoggerFactory.getLogger(classOf[Trainer])
 
   def prepareSha1WithClassificationForTrainingSet(): (List[(String, Boolean)]) = {
     val loggedCommits = parserInvoker.listLoggedCommits()
@@ -16,7 +18,9 @@ class Trainer(private val parserInvoker: ParserInvoker,
       .filter(commit => commit.containsFix())
     log.info("prepareSha1WithClassificationForTrainingSet commitsContainingFixes size " + commitsContainingFixes.size)
     val errorsSHA1s = commitsContainingFixes
-      .map(fixingCommit => { parserInvoker.findCausesForFix(fixingCommit) })
+      .map(fixingCommit => {
+        parserInvoker.findCausesForFix(fixingCommit)
+      })
       .flatten.toList.map(x => x._2)
     log.info("prepareSha1WithClassificationForTrainingSet errorsSHA1s size " + errorsSHA1s.size)
     val result = loggedCommits
@@ -35,8 +39,8 @@ class Trainer(private val parserInvoker: ParserInvoker,
     bags
   }
 
-  def prepareKeysForTrainingSet(bags: List[ClassifiedBagOfWords]) = {
-    val keys = bags.map(bag => bag.map.keySet.toList).flatten.removeDuplicates.toArray
+  def prepareKeysForTrainingSet(bags: List[ClassifiedBagOfWords]): Array[String] = {
+    val keys = bags.flatMap(bag => bag.map.keySet.toList).distinct.toArray
     log.info("prepareKeysForTrainingSet keys size " + keys.size)
     keys
   }
@@ -66,6 +70,7 @@ class Trainer(private val parserInvoker: ParserInvoker,
     val bags = prepareTrainingSet()
     val keys = prepareKeysForTrainingSet(bags)
     val instances = wekaWrapper.generateInstances(bags, keys)
+
     log.info("measurePerformance before spliting instances")
     val srfTraining = new StratifiedRemoveFolds()
     srfTraining.setInputFormat(instances)
@@ -73,6 +78,7 @@ class Trainer(private val parserInvoker: ParserInvoker,
     srfTraining.setFold(5)
     srfTraining.setInvertSelection(true)
     srfTraining.setSeed(1)
+
     val trainingInstances = Filter.useFilter(instances, srfTraining)
     trainingInstances.setClassIndex(instances.numAttributes() - 1)
     log.info("measurePerformance before training on instances")
@@ -80,6 +86,7 @@ class Trainer(private val parserInvoker: ParserInvoker,
     modelDao.saveModel(parserInvoker.getProjectName, wekaWrapper.saveModel, keys.toList)
     log.info("measurePerformance after training on instances")
     log.info("measurePerformance before testing on instances")
+
     val srfTesting = new StratifiedRemoveFolds()
     srfTesting.setInputFormat(instances)
     srfTesting.setNumFolds(5)

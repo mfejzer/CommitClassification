@@ -1,13 +1,10 @@
 package pl.umk.bugclassification.scmparser.gerrit
-import scala.actors.Actor
 
-import com.codahale.logula.Logging
-
+import akka.actor.{Actor, ActorLogging}
 import pl.umk.bugclassification.scmparser.invokers.InvokerOnDirectory
-import pl.umk.bugclassification.scmparser.messages.Classify
-import pl.umk.bugclassification.scmparser.messages.Learn
+import pl.umk.bugclassification.scmparser.messages.{Classify, Learn}
 
-trait ProjectInvoker extends Actor with InvokerOnDirectory with Logging{
+trait ProjectInvoker extends Actor with ActorLogging with InvokerOnDirectory {
   protected def resetRepo: Unit
 
   protected def resetRepo(branch: String): Unit
@@ -17,29 +14,25 @@ trait ProjectInvoker extends Actor with InvokerOnDirectory with Logging{
   protected def fetchAndCheckoutFromGerrit(ref: String)
 
   protected def learn
-  
+
   protected def classify(ref: String, sha1: String): Boolean
-  
+
   protected def send(sha1: String, isCommitClassifiedBuggy: Boolean): Unit
 
-  def act() {
-   loop {
-      receive {
-        case Learn("master") => {
-          resetRepo
-          learn
-        }
-        case Learn(branch) => {
-          resetRepo(branch)
-          learn
-        }
-        case Classify(ref, sha1) => {
-          log.info("Classify "+ref+" "+sha1)
-          fetchAndCheckoutFromGerrit(ref)
-          val isCommitClassifiedBuggy = classify(ref, sha1)
-          send(sha1, isCommitClassifiedBuggy)
-        }
-      }
+  def receive = {
+    case Learn("master") => {
+      resetRepo
+      learn
+    }
+    case Learn(branch) => {
+      resetRepo(branch)
+      learn
+    }
+    case Classify(ref, sha1) => {
+      log.info("Classify " + ref + " " + sha1)
+      fetchAndCheckoutFromGerrit(ref)
+      val isCommitClassifiedBuggy = classify(ref, sha1)
+      send(sha1, isCommitClassifiedBuggy)
     }
   }
 }
