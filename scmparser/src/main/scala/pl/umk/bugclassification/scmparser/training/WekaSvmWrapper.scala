@@ -22,6 +22,8 @@ class WekaSvmWrapper extends WekaWrapper {
     val valuation = new Evaluation(instances)
     valuation.crossValidateModel(classifier, instances, 10, new Random(1))
     log.info(valuation.toSummaryString)
+    log.info(valuation.toClassDetailsString)
+    log.info(valuation.toMatrixString)
   }
 
   override val log: Logger = LoggerFactory.getLogger(classOf[WekaSvmWrapper])
