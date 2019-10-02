@@ -10,12 +10,14 @@ import pl.umk.bugclassification.scmparser.training.Trainer
 import pl.umk.bugclassification.scmparser.training.WekaWrapperBuilder
 
 class GerritSshProjectInvoker(private val port: Int, private val hostname: String,
-  private val user: String, val projectName: String, private val directory: String,
-  private val modelDao: ModelDAO) extends ProjectInvoker {
+                              private val user: String, val projectName: String, private val directory: String,
+                              private val historyLimit: Int, private val modelDao: ModelDAO) extends ProjectInvoker {
 
   private val commentSender = new GerritSshCommentOnPatchSetInvoker(port, hostname)
 
-  def dirUrl(): String = { directory }
+  def dirUrl(): String = {
+    directory
+  }
 
   protected def resetRepo: Unit = {
     fetch
@@ -38,13 +40,13 @@ class GerritSshProjectInvoker(private val port: Int, private val hostname: Strin
   }
 
   protected def learn: Unit = {
-    val parserInvoker = new GitParserInvoker(projectName, directory)
+    val parserInvoker = new GitParserInvoker(projectName, directory, historyLimit)
     val trainer = new Trainer(parserInvoker, WekaWrapperBuilder.getSvmBuilder, modelDao)
     trainer.measurePerformance
   }
 
   protected def classify(ref: String, sha1: String): Boolean = {
-    val parserInvoker = new GitParserInvoker(projectName, directory)
+    val parserInvoker = new GitParserInvoker(projectName, directory, historyLimit)
     val diff = parserInvoker.showCommit(sha1)
     val classificator = new Classificator(modelDao)
     classificator.classificateCommit(projectName, diff)

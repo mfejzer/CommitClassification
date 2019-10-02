@@ -25,8 +25,8 @@ case object GitLogOnelineCommand extends GitCommand {
   def command = List("git", "log", "--oneline")
 }
 
-case object GitLogNoMergesCommand extends GitCommand {
-  def command = List("git", "log", "--name-only","--no-merges","-500")
+case class GitLogNoMergesCommand(private val historyLimit: Int) extends GitCommand {
+  def command = List("git", "log", "--name-only", "--no-merges", String.valueOf(-historyLimit))
 }
 
 case class GitShowCommitCommand(sha1: String) extends GitCommand {
@@ -38,7 +38,7 @@ case class GitDiffCommand(firstSha1: String, secondSha1: String) extends GitComm
 }
 
 case class GitDiffOnFileWithParentCommand(commit: Commit, file: String) extends GitCommand {
-  def command = List("git", "diff", commit.sha1, commit.parent,"--", file)
+  def command = List("git", "diff", commit.sha1, commit.parent, "--", file)
 }
 
 case class GitBlameOnFileWithParentCommand(commit: Commit, file: String) extends GitCommand {

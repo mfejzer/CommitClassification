@@ -6,16 +6,16 @@ import pl.umk.bugclassification.scmparser.training.ModelDAO
 
 class Controller(private val port: Int, private val hostname: String,
                  private val user: String, private val directory: String,
-                 private val modelDao: ModelDAO) extends Actor {
+                 private val historyLimit: Int, private val modelDao: ModelDAO) extends Actor {
 
-  var projectInvokers = new ProjectPreparer(port, hostname, user, directory, modelDao).allProjectInvokers
+  var projectInvokers = new ProjectPreparer(port, hostname, user, directory, historyLimit, modelDao).allProjectInvokers
 
   def receive = {
     case PreprareAllProjects => {
-      projectInvokers = new ProjectPreparer(port, hostname, user, directory, modelDao).allProjectInvokers
+      projectInvokers = new ProjectPreparer(port, hostname, user, directory, historyLimit, modelDao).allProjectInvokers
     }
     case PreprareMissingProjects => {
-      projectInvokers.++(new ProjectPreparer(port, hostname, user, directory, modelDao).missingProjectInvokers)
+      projectInvokers.++(new ProjectPreparer(port, hostname, user, directory, historyLimit, modelDao).missingProjectInvokers)
     }
     case LearnOnAllProjects => {
       val learner = new Learner(projectInvokers)

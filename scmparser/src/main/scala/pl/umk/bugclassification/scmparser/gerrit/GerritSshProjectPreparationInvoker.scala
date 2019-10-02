@@ -1,15 +1,16 @@
 package pl.umk.bugclassification.scmparser.gerrit
-import scala.collection.mutable.MapBuilder
+
 import scala.sys.process.ProcessBuilder
 import scala.sys.process.ProcessLogger
-
 import pl.umk.bugclassification.scmparser.git.GitLogNoMergesCommand
 import pl.umk.bugclassification.scmparser.invokers.RmCommand
 import pl.umk.bugclassification.scmparser.training.ModelDAO
 
+import scala.collection.mutable
+
 class GerritSshProjectPreparationInvoker(private val port: Int, private val hostname: String,
-  private val user: String, private val directory: String,
-  private val modelDao: ModelDAO) extends ProjectPreparationInvoker {
+                                         private val user: String, private val directory: String,
+                                         private val historyLimit: Int, private val modelDao: ModelDAO) extends ProjectPreparationInvoker {
   def dirUrl = directory
 
   private def getAllProjects: List[String] = {
@@ -21,7 +22,7 @@ class GerritSshProjectPreparationInvoker(private val port: Int, private val host
   }
 
   private def checkIfValid(projectName: String): ProcessBuilder = {
-    createProcessBuilder(GitLogNoMergesCommand, "/" + projectName)
+    createProcessBuilder(GitLogNoMergesCommand(historyLimit), "/" + projectName)
   }
 
   private def rm(projectName: String): ProcessBuilder = {
@@ -41,9 +42,12 @@ class GerritSshProjectPreparationInvoker(private val port: Int, private val host
   }
 
   private def createProjectInvokers(projects: List[String]): Map[String, ProjectInvoker] = {
-    val mapBuilder = new MapBuilder[String, ProjectInvoker, Map[String, ProjectInvoker]](Map.empty)
+    val mapBuilder = new mutable.MapBuilder[String, ProjectInvoker, Map[String, ProjectInvoker]](Map.empty)
     projects.foreach(projectName =>
-      mapBuilder += projectName -> new GerritSshProjectInvoker(port, hostname, user, projectName, directory + "/" + projectName, modelDao))
+      mapBuilder += projectName -> new GerritSshProjectInvoker(port, hostname,
+        user, projectName, directory + "/" + projectName,
+        historyLimit, modelDao)
+    )
 
     mapBuilder.result
   }

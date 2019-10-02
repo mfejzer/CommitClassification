@@ -4,7 +4,9 @@ import org.slf4j.LoggerFactory
 import pl.umk.bugclassification.scmparser.git.parsers.results.{Blame, Commit}
 import pl.umk.bugclassification.scmparser.git.parsers.{BlameParser, CommitParser}
 
-class GitParserInvoker(private val projectName: String, private val repoLocationUrl: String) extends ParserInvoker {
+class GitParserInvoker(private val projectName: String,
+                       private val repoLocationUrl: String,
+                       private val historyLimit: Int) extends ParserInvoker {
 
   val log = LoggerFactory.getLogger(classOf[GitParserInvoker])
 
@@ -27,7 +29,7 @@ class GitParserInvoker(private val projectName: String, private val repoLocation
   }
 
   private def extractLog(): String = {
-    createProcessBuilder(GitLogNoMergesCommand).lines.mkString("\n") + "\n"
+    createProcessBuilder(GitLogNoMergesCommand(historyLimit)).lines.mkString("\n") + "\n"
   }
 
   def listLoggedCommits(): List[Commit] = {

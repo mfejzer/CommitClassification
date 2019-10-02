@@ -1,4 +1,5 @@
 package pl.umk.bugclassification.scmparser
+
 import java.io.File
 
 import scala.Array.canBuildFrom
@@ -7,11 +8,11 @@ import pl.umk.bugclassification.scmparser.gerrit.GerritSshProjectPreparationInvo
 import pl.umk.bugclassification.scmparser.training.ModelDAO
 
 class ProjectPreparer(private val port: Int, private val hostname: String,
-  private val user: String, private val directory: String,
-  private val modelDao: ModelDAO) {
+                      private val user: String, private val directory: String,
+                      private val historyLimit: Int, private val modelDao: ModelDAO) {
 
   private val projectPreparationInvoker = new GerritSshProjectPreparationInvoker(port, hostname,
-    user, directory, modelDao)
+    user, directory, historyLimit, modelDao)
   private val currentProjects = getProjectsFromDirectory
 
   def allProjectInvokers = if (currentProjects.isEmpty) {

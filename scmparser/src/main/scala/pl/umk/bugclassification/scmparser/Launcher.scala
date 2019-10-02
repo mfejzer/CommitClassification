@@ -8,9 +8,9 @@ import scala.concurrent.duration._
 
 object Launcher {
 
-  def start(host: String, port: Int, user: String, directory: String, repeatLearnAfterHours: Int) {
+  def start(host: String, port: Int, user: String, directory: String, repeatLearnAfterHours: Int, historyLimit: Int) {
     val system = ActorSystem("scmparser")
-    val controller = new Controller(port, host, user, directory, new ModelDAOImpl)
+    val controller = new Controller(port, host, user, directory, historyLimit, new ModelDAOImpl)
     val worker = new Worker(port, host, controller)
     controller.self ! PreprareAllProjects
     controller.self ! LearnOnAllProjects
@@ -26,7 +26,7 @@ object Launcher {
 
   def main(args: Array[String]): Unit = {
     val system = ActorSystem("scmparser")
-    val controller = new Controller(29418, "machina", "mfejzer", "/home/mfejzer/src/bonus", new ModelDAOImpl)
+    val controller = new Controller(29418, "machina", "mfejzer", "/home/mfejzer/src/bonus", 500, new ModelDAOImpl)
     val worker = new Worker(29418, "machina", controller)
     controller.self ! PreprareAllProjects
   }
