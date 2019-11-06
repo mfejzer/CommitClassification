@@ -110,7 +110,30 @@ Bugzilla/DB/Schema/Pg.pm
     assert(result.get(4).filenames.length === 1)
   }
 
-  test("parrsing correct log containing commit with no files") {
+  test("parsing correct log containing commit with filename with space"){
+    val log =
+      """commit 1e0697e48a1a5be4f96346c8e6c13f865f8d63dd
+Author: s e <se@apache.org>
+Date:   Fri Jul 10 11:45:46 2015 +0000
+
+    reworked mod_h2 donation checkin into build system, added documentation
+
+
+    git-svn-id: https://svn.apache.org/repos/asf/httpd/httpd/trunk@1690248 13f79535-47bb-0310-9956-ffa450edef68
+
+modules/http2/h2_io_set.c
+modules/http2/mod-h2.xcodeproj/xcuserdata/sei.xcuserdatad/xcschemes/mod_h2 make.xcscheme
+modules/http2/h2_response.c
+
+      """
+
+    val result = CommitParser.parse(CommitParser.commitList, log)
+    assert(result.successful)
+    assert(result.get.length == 1)
+    result.get(0).filenames.contains("modules/http2/mod-h2.xcodeproj/xcuserdata/sei.xcuserdatad/xcschemes/mod_h2 make.xcscheme")
+  }
+
+  test("parsing correct log containing commit with no files") {
     val log =
       """commit b15d78fd348c963d5df649a986b31c9b2dd36b43
 Author: Mikołaj Fejzer <mfejzer@gmail.com>

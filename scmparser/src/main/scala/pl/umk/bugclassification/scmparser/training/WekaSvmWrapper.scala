@@ -6,12 +6,19 @@ import org.slf4j.{Logger, LoggerFactory}
 import weka.classifiers.Classifier
 import weka.classifiers.Evaluation
 import weka.core.Instances
+import weka.filters.supervised.instance.SpreadSubsample
+import weka.filters.Filter
 
 class WekaSvmWrapper extends WekaWrapper {
   private val classifier = new weka.classifiers.functions.LibSVM()
 
   def train(instances: Instances) = {
-    classifier.buildClassifier(instances)
+    log.info(instances.numInstances().toString)
+    val ff = new SpreadSubsample
+    ff.setInputFormat(instances)
+    val trainingInstances = Filter.useFilter(instances, ff)
+    log.info(trainingInstances.numInstances().toString)
+    classifier.buildClassifier(trainingInstances)
   }
 
   def saveModel(): Classifier = {
