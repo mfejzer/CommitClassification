@@ -31,8 +31,8 @@ class WekaWrapperSuite extends FunSuite {
     val cleanValue = result._3
     assert(keys.size + 1 === attributes.size())
     assert(keys.indices.forall(index =>
-      keys(index) == attributes.elementAt(index).asInstanceOf[Attribute].name()))
-    assert("WekaWrapperClassification" === attributes.lastElement().asInstanceOf[Attribute].name())
+      keys(index) == attributes.get(index).name()))
+    assert("class" === attributes.get(attributes.size()-1).name())
     assert(0.0 === buggyValue)
     assert(1.0 === cleanValue)
   }

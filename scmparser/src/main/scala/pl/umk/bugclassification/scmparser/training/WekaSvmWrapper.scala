@@ -3,26 +3,25 @@ package pl.umk.bugclassification.scmparser.training
 import java.util.Random
 
 import org.slf4j.{Logger, LoggerFactory}
-import weka.classifiers.Classifier
-import weka.classifiers.Evaluation
+import weka.classifiers.{AbstractClassifier, Classifier, Evaluation}
 import weka.core.Instances
-import weka.filters.supervised.instance.SpreadSubsample
 import weka.filters.Filter
+import weka.filters.supervised.instance.ClassBalancer
 
 class WekaSvmWrapper extends WekaWrapper {
   private val classifier = new weka.classifiers.functions.LibSVM()
 
   def train(instances: Instances) = {
     log.info(instances.numInstances().toString)
-    val ff = new SpreadSubsample
-    ff.setInputFormat(instances)
-    val trainingInstances = Filter.useFilter(instances, ff)
+    val classBalancer = new ClassBalancer
+    classBalancer.setInputFormat(instances)
+    val trainingInstances = Filter.useFilter(instances, classBalancer)
     log.info(trainingInstances.numInstances().toString)
     classifier.buildClassifier(trainingInstances)
   }
 
   def saveModel(): Classifier = {
-    Classifier.makeCopy(classifier)
+    AbstractClassifier.makeCopy(classifier)
   }
 
   def printEvaluation(instances: Instances) = {

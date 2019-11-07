@@ -1,41 +1,40 @@
 package pl.umk.bugclassification.scmparser.training
 
-import org.slf4j.{Logger, LoggerFactory}
-import weka.classifiers.Classifier
-import weka.core.{Attribute, FastVector, Instance, Instances}
+import java.util
+import java.util.ArrayList
 
-import scala.Array.canBuildFrom
+import org.slf4j.LoggerFactory
+import weka.classifiers.Classifier
+import weka.core.{Attribute, DenseInstance, FastVector, Instance, Instances}
+
 import scala.collection.mutable.ArrayBuilder.ofDouble
 
 trait WekaWrapper {
 
   val log = LoggerFactory.getLogger(classOf[WekaWrapper])
 
-  def generateAttributes(keys: Array[String]): (FastVector, Double, Double) = {
-    log.info("generateAttributes begore creation of attributes")
-    val atts = new FastVector()
-    keys.foreach(key => atts.addElement(new Attribute(key)))
+  def generateAttributes(keys: Array[String]): (ArrayList[Attribute], Double, Double) = {
+    log.info("generateAttributes before creation of attributes")
+    val attributes: util.ArrayList[Attribute] = new util.ArrayList[Attribute]
 
-    val classificationAttributeValues = new FastVector()
-    classificationAttributeValues.addElement("buggy")
-    classificationAttributeValues.addElement("clean")
+    keys.foreach(key => attributes.add(new Attribute(key)))
 
-    val classificationAttribute = new Attribute("WekaWrapperClassification", classificationAttributeValues)
-    atts.addElement(classificationAttribute)
+    val classificationAttributeValues = new util.ArrayList[String]
+    classificationAttributeValues.add("buggy")
+    classificationAttributeValues.add("clean")
+
+    val classificationAttribute = new Attribute("class", classificationAttributeValues)
+    attributes.add(classificationAttribute)
     log.info("generateAttributes after creation of attributes")
 
-    (atts, classificationAttributeValues.indexOf("buggy").toDouble, classificationAttributeValues.indexOf("clean").toDouble)
+    (attributes, classificationAttributeValues.indexOf("buggy").toDouble, classificationAttributeValues.indexOf("clean").toDouble)
   }
 
   def generateInstances(bags: List[ClassifiedBagOfWords], keys: Array[String]): Instances = {
-    val attributes = generateAttributes(keys)
-
-    val atts = attributes._1
-    val buggyValue = attributes._2
-    val cleanValue = attributes._3
+    val (attributes, buggyValue, cleanValue) = generateAttributes(keys)
 
     log.info("generateInstances before createTrainingInstance for each instance ")
-    val instances = new Instances("Training", atts, 0)
+    val instances = new Instances("Training", attributes, 0)
     bags.par.
       map(bag => createTrainingInstance(bag, keys, buggyValue, cleanValue)).seq.
       foreach(instance => instances.add(instance))
@@ -65,7 +64,7 @@ trait WekaWrapper {
       b += cleanValue
     }
     val values = b.result
-    val instance = new Instance(1.0, values)
+    val instance = new DenseInstance(1.0, values)
 
     instance
   }
@@ -73,7 +72,7 @@ trait WekaWrapper {
   def createClassificationInstances(bag: BagOfWords, keys: Array[String]): Instances = {
     val attributes = generateAttributes(keys)
     val values = (populateValues(bag, keys) += 0).result
-    val instance = new Instance(1.0, values)
+    val instance = new DenseInstance(1.0, values)
 
     val instances = new Instances("Classification", attributes._1, 0)
     instances.setClassIndex(instances.numAttributes() - 1)
