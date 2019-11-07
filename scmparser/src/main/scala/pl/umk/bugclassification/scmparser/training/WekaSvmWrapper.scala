@@ -3,13 +3,14 @@ package pl.umk.bugclassification.scmparser.training
 import java.util.Random
 
 import org.slf4j.{Logger, LoggerFactory}
+import weka.classifiers.functions.SMO
 import weka.classifiers.{AbstractClassifier, Classifier, Evaluation}
 import weka.core.Instances
 import weka.filters.Filter
 import weka.filters.supervised.instance.ClassBalancer
 
 class WekaSvmWrapper extends WekaWrapper {
-  private val classifier = new weka.classifiers.functions.LibSVM()
+  private val classifier = new SMO()
 
   def train(instances: Instances) = {
     log.info(instances.numInstances().toString)
