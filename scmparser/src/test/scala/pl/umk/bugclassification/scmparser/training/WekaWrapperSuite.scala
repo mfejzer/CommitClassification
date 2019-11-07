@@ -32,7 +32,7 @@ class WekaWrapperSuite extends FunSuite {
     assert(keys.size + 1 === attributes.size())
     assert(keys.indices.forall(index =>
       keys(index) == attributes.get(index).name()))
-    assert("class" === attributes.get(attributes.size()-1).name())
+    assert("WekaWrapperClassification" === attributes.get(attributes.size()-1).name())
     assert(0.0 === buggyValue)
     assert(1.0 === cleanValue)
   }

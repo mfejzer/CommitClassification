@@ -23,7 +23,7 @@ trait WekaWrapper {
     classificationAttributeValues.add("buggy")
     classificationAttributeValues.add("clean")
 
-    val classificationAttribute = new Attribute("class", classificationAttributeValues)
+    val classificationAttribute = new Attribute("WekaWrapperClassification", classificationAttributeValues)
     attributes.add(classificationAttribute)
     log.info("generateAttributes after creation of attributes")
 
