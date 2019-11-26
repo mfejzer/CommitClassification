@@ -34,7 +34,7 @@ class WekaSvmWrapper extends WekaWrapper {
     log.info("RESULT;" +
       valuation.precision(0) + ";" +
       valuation.recall(0) + ";" +
-      valuation.fMeasure(0) +
+      valuation.fMeasure(0) + ";" +
       valuation.precision(1) + ";" +
       valuation.recall(1) + ";" +
       valuation.fMeasure(1)
