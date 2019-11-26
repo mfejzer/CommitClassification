@@ -61,7 +61,7 @@ class GitParserInvoker(private val projectName: String,
     filterRemovedLines(createProcessBuilder(GitDiffOnFileWithParentCommand(commit, file)).lineStream.toList)
   }
 
-  private def filterRemovedLines(fileContent: List[String]): List[String] = {
+  def filterRemovedLines(fileContent: List[String]): List[String] = {
     fileContent.filter(x => {
       x.startsWith("-") && (!x.contains("---"))
     }).map(x => x.drop(1))
