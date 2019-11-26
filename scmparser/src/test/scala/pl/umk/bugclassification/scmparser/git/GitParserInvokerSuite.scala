@@ -1,7 +1,10 @@
 package pl.umk.bugclassification.scmparser.git
 
+import org.junit.runner.RunWith
 import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class GitParserInvokerSuite extends FunSuite {
   test("check removing all lines on new file") {
     val diff =
