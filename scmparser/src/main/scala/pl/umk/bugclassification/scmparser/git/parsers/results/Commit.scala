@@ -4,8 +4,8 @@ import pl.umk.bugclassification.scmparser.git.BugFixDetectionList
 class Commit(val sha1: String, val author: String, val date: String, val message: String, val filenames: List[String]) {
   def containsFix(): Boolean = {
     val result = BugFixDetectionList.detectionList()
-      .map(x => { message.contains(x) })
-      .reduce((x, y) => (x || y))
+      .map(x => { message.toLowerCase.contains(x) })
+      .reduce((x, y) => x || y)
     result
   }
 
