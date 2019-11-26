@@ -31,6 +31,14 @@ class WekaSvmWrapper extends WekaWrapper {
     log.info(valuation.toSummaryString)
     log.info(valuation.toClassDetailsString)
     log.info(valuation.toMatrixString)
+    log.info("RESULT;" +
+      valuation.precision(0) + ";" +
+      valuation.recall(0) + ";" +
+      valuation.fMeasure(0) +
+      valuation.precision(1) + ";" +
+      valuation.recall(1) + ";" +
+      valuation.fMeasure(1)
+    )
   }
 
   override val log: Logger = LoggerFactory.getLogger(classOf[WekaSvmWrapper])
