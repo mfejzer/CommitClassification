@@ -38,7 +38,7 @@ case class GitDiffCommand(firstSha1: String, secondSha1: String) extends GitComm
 }
 
 case class GitDiffOnFileWithParentCommand(commit: Commit, file: String) extends GitCommand {
-  def command = List("git", "diff", commit.sha1, commit.parent, "--", file)
+  def command = List("git", "diff", commit.parent, commit.sha1, "--", file)
 }
 
 case class GitBlameOnFileWithParentCommand(commit: Commit, file: String) extends GitCommand {
