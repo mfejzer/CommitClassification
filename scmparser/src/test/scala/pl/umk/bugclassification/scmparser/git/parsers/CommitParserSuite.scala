@@ -102,11 +102,16 @@ Bugzilla/DB/Schema/Pg.pm
     val result = CommitParser.parse(CommitParser.commitList, log)
     assert(result.successful === true)
     assert(result.get.length === 5)
-    assert(result.get.map(x => (x.author == "Max Kanat-Alexander <mkanat@bugzilla.org>")).toList.reduce((x, y) => (x && y)))
+    assert(result.get.map(x => x.author == "Max Kanat-Alexander <mkanat@bugzilla.org>").reduce((x, y) => x && y))
+    assert(result.get(0).sha1 == "a1f7a37246b744539384a10e77a73efdc7242dfb")
     assert(result.get(0).filenames.length === 1)
+    assert(result.get(1).sha1 == "cb25db759a43927ee9c064ee656249ac8c0b4f38")
     assert(result.get(1).filenames.length === 1)
+    assert(result.get(2).sha1 == "33c83afdc1bfa2d96004265e7c977063eda25567")
     assert(result.get(2).filenames.length === 0)
+    assert(result.get(3).sha1 =="06546f6d247901e10a05bbc0fb0d7f63e6295f8c")
     assert(result.get(3).filenames.length === 0)
+    assert(result.get(4).sha1 == "f9c5529281c464551500c195b032400ab9eaafce")
     assert(result.get(4).filenames.length === 1)
   }
 
@@ -125,12 +130,115 @@ modules/http2/h2_io_set.c
 modules/http2/mod-h2.xcodeproj/xcuserdata/sei.xcuserdatad/xcschemes/mod_h2 make.xcscheme
 modules/http2/h2_response.c
 
-      """
+"""
 
     val result = CommitParser.parse(CommitParser.commitList, log)
     assert(result.successful)
     assert(result.get.length == 1)
-    result.get(0).filenames.contains("modules/http2/mod-h2.xcodeproj/xcuserdata/sei.xcuserdatad/xcschemes/mod_h2 make.xcscheme")
+    assert(result.get(0).filenames.contains("modules/http2/mod-h2.xcodeproj/xcuserdata/sei.xcuserdatad/xcschemes/mod_h2 make.xcscheme"))
+  }
+
+  test("parsing correct log containing commit with multiple files with space"){
+    val log =
+      """commit dcb692918348986945cbd4fbce8158b2b97a8418
+Author: Jan Krems <jan.krems@gmail.com>
+Date:   Thu Jul 18 21:52:55 2019 -0700
+
+    module: implement "exports" proposal for CommonJS
+
+    Refs: https://github.com/jkrems/proposal-pkg-exports/issues/36
+    Refs: https://github.com/nodejs/node/pull/28568
+
+    PR-URL: https://github.com/nodejs/node/pull/28759
+    Reviewed-By: Guy Bedford <guybedford@gmail.com>
+    Reviewed-By: Bradley Farias <bradley.meck@gmail.com>
+
+doc/api/errors.md
+doc/api/modules.md
+lib/internal/errors.js
+lib/internal/modules/cjs/loader.js
+src/module_wrap.cc
+src/node_errors.h
+src/node_file.cc
+src/node_options.cc
+test/es-module/test-esm-exports.mjs
+test/fixtures/node_modules/pkgexports/package.json
+test/fixtures/node_modules/pkgexports/sp ce.js
+test/fixtures/pkgexports.mjs
+test/parallel/test-module-package-exports.js
+
+commit 4fc7cd9bc1093160ec0e40b626169134194a51e9
+Author: Colin Ihrig <cjihrig@gmail.com>
+Date:   Mon Jul 22 17:44:49 2019 -0400
+
+    lib: support min/max values in validateInteger()
+
+    This commit updates validateInteger() in two ways:
+
+    - Number.isInteger() is used instead of Number.isSafeInteger().
+      This ensures that all integer values are supported.
+    - Minimum and maximum values are supported. They default to
+      the min and max safe integer values, but can be customized.
+
+    PR-URL: https://github.com/nodejs/node/pull/28810
+    Reviewed-By: Tobias Nießen <tniessen@tnie.de>
+    Reviewed-By: Michaël Zasso <targos@protonmail.com>
+    Reviewed-By: Richard Lau <riclau@uk.ibm.com>
+    Reviewed-By: Rich Trott <rtrott@gmail.com>
+    Reviewed-By: Trivikram Kamat <trivikr.dev@gmail.com>
+
+lib/internal/validators.js
+
+"""
+
+    val result = CommitParser.parse(CommitParser.commitList, log)
+    assert(result.successful)
+    assert(result.get.length == 2)
+    assert(result.get(0).filenames.contains("test/fixtures/node_modules/pkgexports/sp ce.js"))
+  }
+
+  test("parsing filenames list"){
+    val files =
+      """
+doc/api/errors.md
+doc/api/modules.md
+lib/internal/errors.js
+lib/internal/modules/cjs/loader.js
+src/module_wrap.cc
+src/node_errors.h
+src/node_file.cc
+src/node_options.cc
+test/es-module/test-esm-exports.mjs
+test/fixtures/node_modules/pkgexports/package.json
+test/fixtures/node_modules/pkgexports/sp ce.js
+test/fixtures/pkgexports.mjs
+test/parallel/test-module-package-exports.js
+
+"""
+
+    val result = CommitParser.parse(CommitParser.filenames, files)
+    assert(result.successful)
+    assert(result.get.length == 13)
+    assert(result.get.contains("test/fixtures/node_modules/pkgexports/sp ce.js"))
+  }
+
+  test("parsing message"){
+    val message =
+      """
+
+    Update copyright dates
+
+    For change I99f7cd610d069d4ae9429c2ff8b756ebdddc1a60.
+
+    Change-Id: I7357680625027017eb00de4dfeb15ba715850758
+
+"""
+
+    val result = CommitParser.parse(CommitParser.message, message)
+    assert(result.successful)
+    assert(result.get.contains("Update copyright dates"))
+    assert(result.get.contains("For change I99f7cd610d069d4ae9429c2ff8b756ebdddc1a60"))
+    assert(result.get.contains("Change-Id: I7357680625027017eb00de4dfeb15ba715850758"))
   }
 
   test("parsing correct log containing commit with no files") {
@@ -172,6 +280,7 @@ Date:   Sun Sep 30 19:49:00 2012 +0200
     val result = CommitParser.parse(CommitParser.commitList, log)
     assert(result.successful)
     assert(result.get.length == 3)
+    assert(result.get(2).sha1 == "ff9b7ce7810330984eb346437a58f80b4f6c33ed")
     assert(result.get.map(x => (x.author == "Mikołaj Fejzer <mfejzer@gmail.com>")).toList.reduce((x, y) => (x && y)))
   }
 
@@ -246,7 +355,7 @@ Persistance.hs
     assert(result.get.author == "Mikołaj Fejzer <mfejzer@gmail.com>")
     assert(result.get.date == "Tue Nov 6 22:37:00 2012 +0100")
     assert(result.get.sha1 == "b15d78fd348c963d5df649a986b31c9b2dd36b43")
-    assert(result.get.containsFix() == false)
+    assert(!result.get.containsFix())
   }
 
   test("parsing correct sha1") {

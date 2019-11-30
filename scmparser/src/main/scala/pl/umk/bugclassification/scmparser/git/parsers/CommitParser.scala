@@ -16,28 +16,27 @@ object CommitParser extends RegexParsers with CommonParser {
     (sha1 ~ author ~ date ~ message ~ filenames) ^^ {
       case s ~ a ~ d ~ m ~ f => {
         val c = new Commit(s, a, d, m, f)
-        log.debug("CommitParser properCommit parsed " + c)
+        log.debug("parsed {Commit={}}", c)
         c
       }
     }
 
   def sha1: Parser[String] =
-    ("commit(\\s*)".r ~> sha1Text <~ newline) ^^ { case s => s }
+    ("commit(\\s*)".r ~> sha1Text <~ newline) ^^ (s => s)
 
   def author: Parser[String] =
-    ("Author:(\\s*)".r ~> authorName <~ newline) ^^ { case an => an }
+    ("Author:(\\s*)".r ~> authorName <~ newline) ^^ (a => a)
 
   def date: Parser[String] =
-    ("Date:(\\s*)".r ~> dateValue <~ newline) ^^ { case dv => dv }
+    ("Date:(\\s*)".r ~> dateValue <~ newline) ^^ (dv => dv)
 
   def message: Parser[String] =
-    (newline ~> messageText <~ newline) ^^ { case mt => mt }
-
-  def messageWhenNoFilesArePresent: Parser[String] =
-    (newline ~> messageText) ^^ { case mt => mt }
+    (newline ~> messageText <~ newline.?) ^^ (mt => mt)
 
   def filenames: Parser[List[String]] =
-    (newline ~> (rep1sep(filename, newline)) <~ newline).? ^^ { case of => of.getOrElse(List[String]()) }
+    (newline.? ~> rep(filename) <~ newline.?) ^^ { case files => files}
+
+  def filename: Parser[String] = "^(?!.*(commit))\\S+[\\S ]*\\n".r ^^ { case s => s.trim() }
 
   def authorName: Parser[String] = ".*[^\\n]".r ^^ { case s => s }
 
