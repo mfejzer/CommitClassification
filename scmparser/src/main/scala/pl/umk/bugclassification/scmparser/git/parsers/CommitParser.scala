@@ -36,7 +36,7 @@ object CommitParser extends RegexParsers with CommonParser {
   def filenames: Parser[List[String]] =
     (newline.? ~> rep(filename) <~ newline.?) ^^ { case files => files}
 
-  def filename: Parser[String] = "^(?!.*(commit))\\S+[\\S ]*\\n".r ^^ { case s => s.trim() }
+  def filename: Parser[String] = "^(?!(commit [0-9a-f]{40}))\\S+[\\S ]*\\n".r ^^ { case s => s.trim() }
 
   def authorName: Parser[String] = ".*[^\\n]".r ^^ { case s => s }
 
