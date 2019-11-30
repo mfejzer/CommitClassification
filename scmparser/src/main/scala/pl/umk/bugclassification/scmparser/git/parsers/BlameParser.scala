@@ -14,11 +14,13 @@ object BlameParser extends RegexParsers with CommonParser {
   def blameList: Parser[List[Blame]] = blame *
 
   def blame: Parser[Blame] =
-    ((sha1Text | sha1ParentText) ~ ("\\s+".r ~> metadata) ~ ("\\s".r ~> line)) <~ newline ^^ {
-      case s ~ m ~ l => new Blame(s, m, l)
+    ((sha1Text | sha1ParentText) ~ ("\\s".r ~> filename) ~ ("\\s+".r ~> metadata) ~ ("\\s".r ~> line)) <~ newline ^^ {
+      case s ~ f ~ m ~ l => new Blame(s, f, m, l)
     }
 
   def sha1ParentText: Parser[String] = ("\\^[0-9a-f]{39}".r) ^^ { case s => s }
+
+  def filename: Parser[String] = "\\S+".r ^^ { case s => s }
 
   def metadata: Parser[String] = "\\([^\\)]*\\)".r ^^ { case s => s }
 
