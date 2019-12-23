@@ -195,7 +195,7 @@
 									<mainClass>pl.umk.bugclassification.scmparser.Launcher</mainClass>
 								</transformer>
 							</transformers>
-							<finalName>gerrit</finalName>
+							<finalName>${project.artifactId}-gerrit</finalName>
 						</configuration>
 					</execution>
 				</executions>
