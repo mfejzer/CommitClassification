@@ -1,30 +1,27 @@
-CommitClassification
+review_bug_detection
 ====================
-This application is "source code changes classifier" working with Gerrit.
-The idea of a classifier was proposed in "Classifying software changes: Clean or buggy?" by Sunghun Kim, E James Whitehead, and Yi Zhang. 
+This repository contains implementation of experiments from "Supporting code review by automatic detection of potentially buggy changes" paper. Java 8 and Apache Maven are required to compile the project.
+
+This application is "source code changes classifier" working with Git repositories either as standalone application or with Gerrit code review system.
 The classifier is used to detect potential programming errors, based on those that occurred earlier during the project development. 
 A history of existing errors is retrieved from the source code repository of the project.
-Application works on Git repositories that are under the control of code review system - Gerrit. 
+The idea of a classifier was proposed in "Classifying software changes: Clean or buggy?" by Sunghun Kim, E James Whitehead, and Yi Zhang.
+This project differs from Kim et al. proposal using only subset of features directly available to reviewer, and utilization of instance weight scheme to handle disproportion between classes.
 
-Minimal setup:
-1) Working Gerrit (tested on 2.6-rc0) instance with imported project
-2) Gerrit user with:
-2.1) ssh key without password
-2.2) permissions to review code
-2.3) permissions to list available projects
-2.4) permissions to receive Gerrit events via "ssh -p <port> <host> gerrit stream-events"
-3) Project history should contain commits with metadata about fixed bugs (see BugFixDetectionList.scala)
-4) Installed Java and Maven (at least 3.0.3)
-
-How to complie (in folder scmparser):
+# How to complie:
 $ mvn clean install 
 
-How to run (in folder scmparser) and receive message describing parameters:
-$ java -jar target/scmparser-1.0-SNAPSHOT.jar --help
+# How to run replication
+$ java -jar target/scmparser-replication.jar --help
 
-What parameters mean:
-  -d, --directory  <arg>                Directory to keep cloned projects
-  -h, --hostname  <arg>                 Gerrit hostname
-  -p, --port  <arg>                     Gerrit port
-  -r, --repeatLearnAfterHours  <arg>    Directory refresh interval
-  -u, --user  <arg>                     Gerrit user
+# Minimal setup for Gerrit integration:
+* Working Gerrit (tested on 2.6-rc0) instance with imported projects
+* Gerrit user with:
+  * ssh key without password
+  * permissions to review code
+  * permissions to list available projects
+  * permissions to receive Gerrit events via "ssh -p <port> <host> gerrit stream-events"
+* Project history should contain commits with metadata about fixed bugs (see BugFixDetectionList.scala)
+
+# How to run Gerrit integration:
+$ java -jar scmparser-gerrit.jar --help
