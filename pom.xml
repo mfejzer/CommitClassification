@@ -176,6 +176,7 @@
 									<mainClass>pl.umk.bugclassification.App</mainClass>
 								</transformer>
 							</transformers>
+							<finalName>${project.artifactId}-replication</finalName>
 						</configuration>
 					</execution>
 					<execution>
