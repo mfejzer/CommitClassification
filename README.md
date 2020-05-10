@@ -13,9 +13,11 @@ $ mvn clean install
 
 # How to run replication:
 * Download selected repository listed in Appendix
+```$ git clone https://github.com/jekyll/jekyll.git```
 * Checkout the used revision
+```$ git checkout edc8f6b70```
 * Run replication:
-$ java -jar target/scmparser-replication.jar --help
+```$ java -jar target/scmparser-replication.jar --help```
 
 # Minimal setup for Gerrit integration:
 * Working Gerrit (tested on 2.6-rc0) instance with imported projects
@@ -27,4 +29,4 @@ $ java -jar target/scmparser-replication.jar --help
 * Project history should contain commits with metadata about fixed bugs (see BugFixDetectionList.scala)
 
 # How to run Gerrit integration:
-$ java -jar scmparser-gerrit.jar --help
+```$ java -jar scmparser-gerrit.jar --help```
