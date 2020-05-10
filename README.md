@@ -12,6 +12,9 @@ This project differs from Kim et al. proposal using only subset of features dire
 $ mvn clean install 
 
 # How to run replication:
+* Download selected repository listed in Appendix
+* Checkout the used revision
+* Run replication:
 $ java -jar target/scmparser-replication.jar --help
 
 # Minimal setup for Gerrit integration:
