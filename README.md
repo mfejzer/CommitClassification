@@ -13,11 +13,11 @@ $ mvn clean install
 
 # How to run replication:
 * Download selected repository listed in Appendix
-```$ git clone https://github.com/jekyll/jekyll.git```
+```$ git clone https://github.com/jekyll/jekyll.git ~/jekyll```
 * Checkout the used revision
 ```$ git checkout edc8f6b70```
 * Run replication:
-```$ java -jar target/scmparser-replication.jar --help```
+```$ java -jar target/scmparser-replication.jar -p jekyll -d ~/jekyll -h 500```
 
 # Minimal setup for Gerrit integration:
 * Working Gerrit (tested on 2.6-rc0) instance with imported projects
